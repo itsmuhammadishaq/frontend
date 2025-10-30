@@ -1,0 +1,10 @@
+# dependencies
+node_modules/
+
+# npm lockfile
+package-lock.json
+
+# env files
+.env
+.env.*
+!.env.example
