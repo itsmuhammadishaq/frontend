@@ -122,7 +122,7 @@ export const googleLogin = (token) => async (dispatch) => {
 
     // POST token to backend endpoint
     const { data } = await axios.post(
-      `${process.env.BACKEND_URL}/api/users/google-login`,
+      `${process.env.REACT_APP_BACKEND_URL}/api/users/google-login`,
       { token },
       config
     );
