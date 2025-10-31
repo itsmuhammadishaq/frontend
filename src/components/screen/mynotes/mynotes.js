@@ -26,14 +26,14 @@ const MyNotes = () => {
   const [open, setOpen] = useState(false);
   const [modalMode, setModalMode] = useState("create");
   const [selectedNote, setSelectedNote] = useState(null);
-
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [noteToDelete, setNoteToDelete] = useState(null);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { loading, notes, error } = useSelector((state) => state.noteList);
+  // ✅ Use default empty array to avoid filter errors
+  const { loading, notes = [], error } = useSelector((state) => state.noteList);
   const { userInfo } = useSelector((state) => state.userLogin);
   const { success: successCreate } = useSelector((state) => state.noteCreate);
   const {
@@ -41,6 +41,7 @@ const MyNotes = () => {
     error: errorDelete,
     success: successDelete,
   } = useSelector((state) => state.noteDelete);
+
   console.log(notes, "notes");
 
   // ✅ Toggle note completion
@@ -71,6 +72,7 @@ const MyNotes = () => {
     setShowDeleteModal(true);
   };
 
+  // ✅ Load notes from backend
   useEffect(() => {
     if (!userInfo) {
       navigate("/");
@@ -79,13 +81,18 @@ const MyNotes = () => {
     dispatch(listNotes());
   }, [dispatch, successCreate, navigate, userInfo, successDelete]);
 
+  // ✅ Sync local notes with redux
   useEffect(() => {
-    if (notes) {
+    if (Array.isArray(notes)) {
       setLocalNotes(notes);
       setCheckedNotes(notes.filter((n) => n.completed).map((n) => n._id));
+    } else {
+      setLocalNotes([]);
+      setCheckedNotes([]);
     }
   }, [notes]);
 
+  // ✅ Sorting & filtering
   const sortedNotes = [...localNotes].sort((a, b) =>
     a.completed === b.completed ? 0 : a.completed ? 1 : -1
   );
