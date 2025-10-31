@@ -1,3 +1,4 @@
+import axios from "axios";
 import {
   USER_LOGIN_FAIL,
   USER_LOGIN_REQUEST,
@@ -10,73 +11,73 @@ import {
   USER_UPDATE_REQUEST,
   USER_UPDATE_SUCCESS,
 } from "../constants/userConstants";
-import axios from "axios";
 
+// ✅ Backend base URL (from .env)
+const API_BASE_URL = process.env.REACT_APP_BACKEND_URL;
+
+/* ----------------------------- LOGIN ----------------------------- */
 export const login = (email, password) => async (dispatch) => {
   try {
     dispatch({ type: USER_LOGIN_REQUEST });
+
     const config = {
-      headers: {
-        "Content-type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
+      withCredentials: true, // ✅ ensures cookies/sessions work with Vercel
     };
+
     const { data } = await axios.post(
-      `${process.env.REACT_APP_BACKEND_URL}/api/users/login`,
-      {
-        email,
-        password,
-      },
+      `${API_BASE_URL}/api/users/login`,
+      { email, password },
       config
     );
+
     dispatch({ type: USER_LOGIN_SUCCESS, payload: data });
     localStorage.setItem("userInfo", JSON.stringify(data));
   } catch (error) {
     dispatch({
       type: USER_LOGIN_FAIL,
       payload:
-        error.response && error.response.data.message
-          ? error.response.data.message
-          : error.message,
+        error.response?.data?.message || error.message || "Login failed",
     });
   }
 };
-export const logout = () => async (dispatch) => {
+
+/* ----------------------------- LOGOUT ----------------------------- */
+export const logout = () => (dispatch) => {
   localStorage.removeItem("userInfo");
   dispatch({ type: USER_LOGOUT });
 };
 
+/* ----------------------------- REGISTER ----------------------------- */
 export const register = (name, email, password, pic) => async (dispatch) => {
   try {
     dispatch({ type: USER_REGISTER_REQUEST });
+
     const config = {
-      headers: {
-        "Content-type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
+      withCredentials: true,
     };
+
     const { data } = await axios.post(
-    `${process.env.REACT_APP_BACKEND_URL}/api/users`,
-      {
-        name,
-        pic,
-        email,
-        password,
-      },
+      `${API_BASE_URL}/api/users`,
+      { name, email, password, pic },
       config
     );
+
     dispatch({ type: USER_REGISTER_SUCCESS, payload: data });
     dispatch({ type: USER_LOGIN_SUCCESS, payload: data });
+
     localStorage.setItem("userInfo", JSON.stringify(data));
   } catch (error) {
     dispatch({
       type: USER_REGISTER_FAIL,
       payload:
-        error.response && error.response.data.message
-          ? error.response.data.message
-          : error.message,
+        error.response?.data?.message || error.message || "Registration failed",
     });
   }
 };
 
+/* ----------------------------- UPDATE PROFILE ----------------------------- */
 export const updateProfile = (user) => async (dispatch, getState) => {
   try {
     dispatch({ type: USER_UPDATE_REQUEST });
@@ -88,14 +89,18 @@ export const updateProfile = (user) => async (dispatch, getState) => {
     const config = {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${userInfo.token}`,
+        Authorization: `Bearer ${userInfo?.token}`,
       },
+      withCredentials: true,
     };
 
-    const { data } = await axios.post("/api/users/profile", user, config);
+    const { data } = await axios.put(
+      `${API_BASE_URL}/api/users/profile`,
+      user,
+      config
+    );
 
     dispatch({ type: USER_UPDATE_SUCCESS, payload: data });
-
     dispatch({ type: USER_LOGIN_SUCCESS, payload: data });
 
     localStorage.setItem("userInfo", JSON.stringify(data));
@@ -103,73 +108,63 @@ export const updateProfile = (user) => async (dispatch, getState) => {
     dispatch({
       type: USER_UPDATE_FAIL,
       payload:
-        error.response && error.response.data.message
-          ? error.response.data.message
-          : error.message,
+        error.response?.data?.message || error.message || "Profile update failed",
     });
   }
 };
 
+/* ----------------------------- GOOGLE LOGIN ----------------------------- */
 export const googleLogin = (token) => async (dispatch) => {
   try {
     dispatch({ type: USER_LOGIN_REQUEST });
 
     const config = {
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
+      withCredentials: true,
     };
 
-    // POST token to backend endpoint
     const { data } = await axios.post(
-      `${process.env.REACT_APP_BACKEND_URL}/api/users/google-login`,
+      `${API_BASE_URL}/api/users/google-login`,
       { token },
       config
     );
 
     dispatch({ type: USER_LOGIN_SUCCESS, payload: data });
-
-    // Save user info locally
     localStorage.setItem("userInfo", JSON.stringify(data));
   } catch (error) {
     dispatch({
       type: USER_LOGIN_FAIL,
       payload:
-        error.response && error.response.data.message
-          ? error.response.data.message
-          : error.message,
+        error.response?.data?.message || error.message || "Google login failed",
     });
   }
 };
 
+/* ----------------------------- FACEBOOK LOGIN ----------------------------- */
 export const facebookLogin = (accessToken) => async (dispatch) => {
   try {
     dispatch({ type: USER_LOGIN_REQUEST });
+
     const config = {
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
+      withCredentials: true,
     };
 
-    // POST access token to backend endpoint
     const { data } = await axios.post(
-      `${process.env.REACT_APP_BACKEND_URL}/api/users/facebook-login`,
+      `${API_BASE_URL}/api/users/facebook-login`,
       { access_token: accessToken },
       config
     );
 
-    // Dispatch success
     dispatch({ type: USER_LOGIN_SUCCESS, payload: data });
-
-    // Save user info to localStorage
     localStorage.setItem("userInfo", JSON.stringify(data));
   } catch (error) {
     dispatch({
       type: USER_LOGIN_FAIL,
       payload:
-        error.response && error.response.data.message
-          ? error.response.data.message
-          : error.message,
+        error.response?.data?.message ||
+        error.message ||
+        "Facebook login failed",
     });
   }
 };
