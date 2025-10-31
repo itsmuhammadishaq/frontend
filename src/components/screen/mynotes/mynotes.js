@@ -26,6 +26,7 @@ const MyNotes = () => {
   const [open, setOpen] = useState(false);
   const [modalMode, setModalMode] = useState("create");
   const [selectedNote, setSelectedNote] = useState(null);
+
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [noteToDelete, setNoteToDelete] = useState(null);
 
@@ -40,17 +41,14 @@ const MyNotes = () => {
     error: errorDelete,
     success: successDelete,
   } = useSelector((state) => state.noteDelete);
-
-  console.log("notes from Redux:", notes);
+  console.log(notes, "notes");
 
   // ✅ Toggle note completion
   const handleCheck = async (id, e) => {
     e.stopPropagation();
-
     const updatedNotes = localNotes.map((note) =>
       note._id === id ? { ...note, completed: !note.completed } : note
     );
-
     setLocalNotes(updatedNotes);
     setCheckedNotes(updatedNotes.filter((n) => n.completed).map((n) => n._id));
 
@@ -73,7 +71,6 @@ const MyNotes = () => {
     setShowDeleteModal(true);
   };
 
-  // ✅ Load notes
   useEffect(() => {
     if (!userInfo) {
       navigate("/");
@@ -82,28 +79,20 @@ const MyNotes = () => {
     dispatch(listNotes());
   }, [dispatch, successCreate, navigate, userInfo, successDelete]);
 
-  // ✅ Update local notes when Redux notes change
   useEffect(() => {
-    if (Array.isArray(notes)) {
+    if (notes) {
       setLocalNotes(notes);
       setCheckedNotes(notes.filter((n) => n.completed).map((n) => n._id));
-    } else {
-      console.warn("⚠️ Notes is not an array:", notes);
-      setLocalNotes([]);
     }
   }, [notes]);
 
-  // ✅ Safely sort and filter
-  const sortedNotes = Array.isArray(localNotes)
-    ? [...localNotes].sort((a, b) =>
-        a.completed === b.completed ? 0 : a.completed ? 1 : -1
-      )
-    : [];
+  const sortedNotes = [...localNotes].sort((a, b) =>
+    a.completed === b.completed ? 0 : a.completed ? 1 : -1
+  );
 
   const filteredNotes = sortedNotes.filter(
     (note) =>
-      note.title &&
-      note.title.toLowerCase().includes(search.trim().toLowerCase())
+      note.title && note.title.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
