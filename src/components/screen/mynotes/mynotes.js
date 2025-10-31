@@ -55,7 +55,7 @@ const MyNotes = () => {
 
     try {
       await axios.put(
-        `/api/notes/${id}/toggle`,
+        `${process.env.REACT_APP_BACKEND_URL}/api/notes/${id}/toggle`,
         {},
         {
           headers: { Authorization: `Bearer ${userInfo.token}` },
