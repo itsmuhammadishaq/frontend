@@ -117,7 +117,6 @@ const MyNotes = () => {
           handleClose={() => setShowDeleteModal(false)}
           note={noteToDelete}
         />
-
         {/* Header */}
         <Row className="align-items-center mb-3 justify-content-between g-2">
           <Col xs={12} sm={8} md={6} lg={5}>
@@ -146,7 +145,6 @@ const MyNotes = () => {
             </Button>
           </Col>
         </Row>
-
         {/* Alerts & Loaders */}
         {errorDelete && (
           <ErrorMessage variant="danger">{errorDelete}</ErrorMessage>
@@ -157,13 +155,13 @@ const MyNotes = () => {
         {!loading && filteredNotes.length === 0 && (
           <p className="text-center text-muted mt-4">No notes found.</p>
         )}
-
         {/* Notes List */}
         {filteredNotes
           .slice()
           .reverse()
           .map((note) => (
             <Accordion key={note._id} className="mb-4">
+              {" "}
               <Card
                 className="shadow-sm"
                 style={{
@@ -173,13 +171,15 @@ const MyNotes = () => {
                     : "1px solid transparent",
                 }}
               >
+                {" "}
                 <Accordion.Header>
+                  {" "}
                   <Form.Check
                     className="me-3"
                     checked={note.completed || false}
                     onChange={(e) => handleCheck(note._id, e)}
                     onClick={(e) => e.stopPropagation()}
-                  />
+                  />{" "}
                   <span
                     style={{
                       color: "black",
@@ -189,9 +189,11 @@ const MyNotes = () => {
                       textDecoration: note.completed ? "line-through" : "none",
                     }}
                   >
-                    {note.title}
-                  </span>
+                    {" "}
+                    {note.title}{" "}
+                  </span>{" "}
                   <div className="d-flex gap-3" style={{ marginRight: 16 }}>
+                    {" "}
                     <Button
                       size="sm"
                       variant="success"
@@ -202,39 +204,45 @@ const MyNotes = () => {
                         setOpen(true);
                       }}
                     >
-                      Edit
-                    </Button>
+                      {" "}
+                      Edit{" "}
+                    </Button>{" "}
                     <Button
                       size="sm"
                       variant="danger"
                       disabled={loadingDelete}
                       onClick={(e) => confirmDeleteHandler(note, e)}
                     >
-                      Delete
-                    </Button>
-                  </div>
-                </Accordion.Header>
-
+                      {" "}
+                      Delete{" "}
+                    </Button>{" "}
+                  </div>{" "}
+                </Accordion.Header>{" "}
                 <Accordion.Body>
+                  {" "}
                   <h6>
-                    <Badge bg="success">Category - {note.category}</Badge>
-                  </h6>
+                    {" "}
+                    <Badge bg="success">Category - {note.category}</Badge>{" "}
+                  </h6>{" "}
                   <blockquote className="blockquote mb-0">
-                    <p>{note.content}</p>
+                    {" "}
+                    <p>{note.content}</p>{" "}
                     <footer className="blockquote-footer">
+                      {" "}
                       Created on{" "}
                       <cite>
+                        {" "}
                         {note.createdAt
                           ? note.createdAt.substring(0, 10)
-                          : "N/A"}
-                      </cite>
-                    </footer>
-                  </blockquote>
-                </Accordion.Body>
-              </Card>
+                          : "N/A"}{" "}
+                      </cite>{" "}
+                    </footer>{" "}
+                  </blockquote>{" "}
+                </Accordion.Body>{" "}
+              </Card>{" "}
             </Accordion>
-          ))}
-      </MainScreen>
+          ))}{" "}
+      </MainScreen>{" "}
     </Container>
   );
 };
