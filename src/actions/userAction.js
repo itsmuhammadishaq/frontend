@@ -153,7 +153,7 @@ export const facebookLogin = (accessToken) => async (dispatch) => {
 
     // POST access token to backend endpoint
     const { data } = await axios.post(
-      `${process.env.REACT_APP_BACKEND_URL}/api/users/facebook-login`,
+      `${process.env.REACT_APP_BACKEND_URL}api/users/facebook-login`,
       { access_token: accessToken },
       config
     );
