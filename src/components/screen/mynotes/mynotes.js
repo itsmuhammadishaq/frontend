@@ -32,6 +32,7 @@ const MyNotes = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  // ✅ Use default empty array to avoid filter errors
   const { loading, notes = [], error } = useSelector((state) => state.noteList);
   const { userInfo } = useSelector((state) => state.userLogin);
   const { success: successCreate } = useSelector((state) => state.noteCreate);
@@ -41,10 +42,9 @@ const MyNotes = () => {
     success: successDelete,
   } = useSelector((state) => state.noteDelete);
 
-  // ✅ Detect new user (no notes yet)
-  const isNewUser = !notes || notes.length === 0;
+  console.log(notes, "notes");
 
-  // ✅ Toggle completion
+  // ✅ Toggle note completion
   const handleCheck = async (id, e) => {
     e.stopPropagation();
     const updatedNotes = localNotes.map((note) =>
@@ -72,7 +72,7 @@ const MyNotes = () => {
     setShowDeleteModal(true);
   };
 
-  // ✅ Fetch notes
+  // ✅ Load notes from backend
   useEffect(() => {
     if (!userInfo) {
       navigate("/");
@@ -81,7 +81,7 @@ const MyNotes = () => {
     dispatch(listNotes());
   }, [dispatch, successCreate, navigate, userInfo, successDelete]);
 
-  // ✅ Sync local notes
+  // ✅ Sync local notes with redux
   useEffect(() => {
     if (Array.isArray(notes)) {
       setLocalNotes(notes);
@@ -96,6 +96,7 @@ const MyNotes = () => {
   const sortedNotes = [...localNotes].sort((a, b) =>
     a.completed === b.completed ? 0 : a.completed ? 1 : -1
   );
+
   const filteredNotes = sortedNotes.filter(
     (note) =>
       note.title && note.title.toLowerCase().includes(search.toLowerCase())
@@ -116,7 +117,6 @@ const MyNotes = () => {
           handleClose={() => setShowDeleteModal(false)}
           note={noteToDelete}
         />
-
         {/* Header */}
         <Row className="align-items-center mb-3 justify-content-between g-2">
           <Col xs={12} sm={8} md={6} lg={5}>
@@ -132,27 +132,19 @@ const MyNotes = () => {
 
           <Col xs={12} sm="auto">
             <Button
-              variant={isNewUser ? "secondary" : "primary"}
+              variant="primary"
               className="w-100 mt-2 mt-sm-0"
               style={{ minWidth: "150px" }}
               onClick={() => {
-                if (isNewUser) return; // Block action for new users
                 setModalMode("create");
                 setSelectedNote(null);
                 setOpen(true);
               }}
-              disabled={isNewUser}
-              title={
-                isNewUser
-                  ? "You need existing notes or admin approval to create one"
-                  : "Create a new note"
-              }
             >
               + Create Note
             </Button>
           </Col>
         </Row>
-
         {/* Alerts & Loaders */}
         {errorDelete && (
           <ErrorMessage variant="danger">{errorDelete}</ErrorMessage>
@@ -163,13 +155,13 @@ const MyNotes = () => {
         {!loading && filteredNotes.length === 0 && (
           <p className="text-center text-muted mt-4">No notes found.</p>
         )}
-
         {/* Notes List */}
         {filteredNotes
           .slice()
           .reverse()
           .map((note) => (
             <Accordion key={note._id} className="mb-4">
+              {" "}
               <Card
                 className="shadow-sm"
                 style={{
@@ -179,13 +171,15 @@ const MyNotes = () => {
                     : "1px solid transparent",
                 }}
               >
+                {" "}
                 <Accordion.Header>
+                  {" "}
                   <Form.Check
                     className="me-3"
                     checked={note.completed || false}
                     onChange={(e) => handleCheck(note._id, e)}
                     onClick={(e) => e.stopPropagation()}
-                  />
+                  />{" "}
                   <span
                     style={{
                       color: "black",
@@ -195,9 +189,11 @@ const MyNotes = () => {
                       textDecoration: note.completed ? "line-through" : "none",
                     }}
                   >
-                    {note.title}
-                  </span>
+                    {" "}
+                    {note.title}{" "}
+                  </span>{" "}
                   <div className="d-flex gap-3" style={{ marginRight: 16 }}>
+                    {" "}
                     <Button
                       size="sm"
                       variant="success"
@@ -208,38 +204,45 @@ const MyNotes = () => {
                         setOpen(true);
                       }}
                     >
-                      Edit
-                    </Button>
+                      {" "}
+                      Edit{" "}
+                    </Button>{" "}
                     <Button
                       size="sm"
                       variant="danger"
                       disabled={loadingDelete}
                       onClick={(e) => confirmDeleteHandler(note, e)}
                     >
-                      Delete
-                    </Button>
-                  </div>
-                </Accordion.Header>
+                      {" "}
+                      Delete{" "}
+                    </Button>{" "}
+                  </div>{" "}
+                </Accordion.Header>{" "}
                 <Accordion.Body>
+                  {" "}
                   <h6>
-                    <Badge bg="success">Category - {note.category}</Badge>
-                  </h6>
+                    {" "}
+                    <Badge bg="success">Category - {note.category}</Badge>{" "}
+                  </h6>{" "}
                   <blockquote className="blockquote mb-0">
-                    <p>{note.content}</p>
+                    {" "}
+                    <p>{note.content}</p>{" "}
                     <footer className="blockquote-footer">
+                      {" "}
                       Created on{" "}
                       <cite>
+                        {" "}
                         {note.createdAt
                           ? note.createdAt.substring(0, 10)
-                          : "N/A"}
-                      </cite>
-                    </footer>
-                  </blockquote>
-                </Accordion.Body>
-              </Card>
+                          : "N/A"}{" "}
+                      </cite>{" "}
+                    </footer>{" "}
+                  </blockquote>{" "}
+                </Accordion.Body>{" "}
+              </Card>{" "}
             </Accordion>
-          ))}
-      </MainScreen>
+          ))}{" "}
+      </MainScreen>{" "}
     </Container>
   );
 };
