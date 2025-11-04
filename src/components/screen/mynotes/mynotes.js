@@ -43,6 +43,7 @@ const MyNotes = () => {
     success: successDelete,
   } = useSelector((state) => state.noteDelete);
 
+  // ✅ Toggle note completion
   const handleCheck = async (id, e) => {
     e.stopPropagation();
     const updatedNotes = localNotes.map((note) =>
@@ -64,12 +65,14 @@ const MyNotes = () => {
     }
   };
 
+  // ✅ Delete confirmation
   const confirmDeleteHandler = (note, e) => {
     e.stopPropagation();
     setNoteToDelete(note);
     setShowDeleteModal(true);
   };
 
+  // ✅ Fetch notes
   useEffect(() => {
     if (!userInfo) {
       navigate("/");
@@ -78,6 +81,7 @@ const MyNotes = () => {
     dispatch(listNotes());
   }, [dispatch, successCreate, navigate, userInfo, successDelete]);
 
+  // ✅ Sync notes locally
   useEffect(() => {
     if (Array.isArray(notes)) {
       setLocalNotes(notes);
@@ -88,10 +92,12 @@ const MyNotes = () => {
     }
   }, [notes]);
 
+  // ✅ Sort completed notes to bottom
   const sortedNotes = [...localNotes].sort((a, b) =>
     a.completed === b.completed ? 0 : a.completed ? 1 : -1
   );
 
+  // ✅ Filter by search
   const filteredNotes = sortedNotes.filter(
     (note) =>
       note.title && note.title.toLowerCase().includes(search.toLowerCase())
@@ -154,7 +160,7 @@ const MyNotes = () => {
           <p className="text-center text-muted mt-5 fs-5">No notes found.</p>
         )}
 
-        {/* Notes */}
+        {/* Notes List */}
         <div className="d-flex flex-column gap-3">
           {filteredNotes
             .slice()
@@ -170,6 +176,7 @@ const MyNotes = () => {
                 >
                   <Accordion.Header>
                     <div className="d-flex align-items-center w-100 justify-content-between">
+                      {/* Checkbox + Title */}
                       <div className="d-flex align-items-center flex-grow-1">
                         <Form.Check
                           className="me-3"
@@ -189,21 +196,23 @@ const MyNotes = () => {
                         </span>
                       </div>
 
-                      {/* Buttons with spacing */}
+                      {/* Edit / Delete Buttons */}
                       <div className="d-flex gap-2 me-2">
-                        <Button
-                          size="sm"
-                          variant="outline-success"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedNote(note);
-                            setModalMode("edit");
-                            setOpen(true);
-                          }}
-                          className="d-flex align-items-center gap-1"
-                        >
-                          <Edit2 size={16} /> Edit
-                        </Button>
+                        {!note.completed && (
+                          <Button
+                            size="sm"
+                            variant="outline-success"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedNote(note);
+                              setModalMode("edit");
+                              setOpen(true);
+                            }}
+                            className="d-flex align-items-center gap-1"
+                          >
+                            <Edit2 size={16} /> Edit
+                          </Button>
+                        )}
                         <Button
                           size="sm"
                           variant="outline-danger"
