@@ -19,7 +19,8 @@ const ForgotPasswordModal = ({ show, handleClose }) => {
         `${process.env.REACT_APP_BACKEND_URL}/api/users/forgot-password`,
         { email }
       );
-      setSuccessMsg(data.message || "Password reset email sent!");
+      setSuccessMsg(data.message || "Password reset email sent! Check your inbox.");
+      setEmail("");
       setLoading(false);
     } catch (err) {
       setErrorMsg(
@@ -50,6 +51,9 @@ const ForgotPasswordModal = ({ show, handleClose }) => {
               onChange={(e) => setEmail(e.target.value)}
               required
             />
+            <Form.Text className="text-muted">
+              We'll send you a link to reset your password.
+            </Form.Text>
           </Form.Group>
 
           <div className="d-flex justify-content-end gap-2">
