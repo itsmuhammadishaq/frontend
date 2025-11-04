@@ -12,8 +12,10 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeSlash } from "react-bootstrap-icons";
 import { useDispatch, useSelector } from "react-redux";
-import { register } from "../../../actions/userAction";
-import { Google, Facebook } from "react-bootstrap-icons"; // 👈 icons
+import { register, googleLogin, facebookLogin } from "../../../actions/userAction";
+import { GoogleLogin } from "@react-oauth/google";
+import FacebookLogin from "@greatsumini/react-facebook-login";
+import { FaGoogle, FaFacebookF } from "react-icons/fa";
 
 const RegisterScreen = () => {
   const dispatch = useDispatch();
@@ -124,14 +126,24 @@ const RegisterScreen = () => {
     dispatch(register(name, email, password, pic));
   };
 
-  // 👇 placeholder for Google login
-  const handleGoogleLogin = () => {
-    alert("Google login clicked! (Integrate OAuth here)");
+  // ✅ Google Login Success
+  const handleGoogleSuccess = (tokenResponse) => {
+    dispatch(googleLogin(tokenResponse.credential));
   };
 
-  // 👇 placeholder for Facebook login
-  const handleFacebookLogin = () => {
-    alert("Facebook login clicked! (Integrate OAuth here)");
+  const handleGoogleError = () => {
+    console.error("Google Sign-In failed");
+  };
+
+  // ✅ Facebook Login Success
+  const handleFacebookSuccess = (response) => {
+    if (response.accessToken) {
+      dispatch(facebookLogin(response.accessToken));
+    }
+  };
+
+  const handleFacebookFailure = (error) => {
+    console.error("Facebook Login Failed:", error);
   };
 
   return (
@@ -222,9 +234,7 @@ const RegisterScreen = () => {
               />
               <Button
                 variant="outline-secondary"
-                onClick={() =>
-                  setShowConfirmPassword(!showConfirmPassword)
-                }
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 tabIndex={-1}
               >
                 {showConfirmPassword ? <EyeSlash /> : <Eye />}
@@ -272,24 +282,44 @@ const RegisterScreen = () => {
         {/* OR Divider */}
         <div className="text-center my-3 text-muted">— or register with —</div>
 
-        {/* Social Login Buttons */}
-        <Stack gap={2}>
-          <Button
-            variant="outline-danger"
-            className="d-flex align-items-center justify-content-center gap-2"
-            onClick={handleGoogleLogin}
-          >
-            <Google /> Continue with Google
-          </Button>
+        {/* ✅ Social Login Buttons (same as LoginScreen) */}
+        <div className="d-flex justify-content-center gap-3 flex-wrap">
+          {/* Google Button */}
+          <div style={{ flex: "1 1 45%" }}>
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={handleGoogleError}
+              render={({ onClick }) => (
+                <button
+                  onClick={onClick}
+                  className="btn btn-light border d-flex align-items-center justify-content-center gap-2 w-100 py-2 rounded-pill shadow-sm"
+                >
+                  <FaGoogle color="#DB4437" size={18} />
+                  <span>Sign up with Google</span>
+                </button>
+              )}
+            />
+          </div>
 
-          <Button
-            variant="outline-primary"
-            className="d-flex align-items-center justify-content-center gap-2"
-            onClick={handleFacebookLogin}
-          >
-            <Facebook /> Continue with Facebook
-          </Button>
-        </Stack>
+          {/* Facebook Button */}
+          <div style={{ flex: "1 1 45%" }}>
+            <FacebookLogin
+              appId={process.env.REACT_APP_FACEBOOK_APP_ID}
+              onSuccess={handleFacebookSuccess}
+              onFail={handleFacebookFailure}
+              render={({ onClick }) => (
+                <button
+                  onClick={onClick}
+                  className="btn btn-primary d-flex align-items-center justify-content-center gap-2 w-100 py-2 rounded-pill shadow-sm"
+                  style={{ backgroundColor: "#1877F2", border: "none" }}
+                >
+                  <FaFacebookF size={18} />
+                  <span>Sign up with Facebook</span>
+                </button>
+              )}
+            />
+          </div>
+        </div>
 
         {/* Login Link */}
         <Row className="py-3 text-center">
