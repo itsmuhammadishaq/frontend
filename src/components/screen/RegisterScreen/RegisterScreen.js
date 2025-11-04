@@ -7,17 +7,18 @@ import {
   Col,
   Spinner,
   InputGroup,
+  Stack,
 } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeSlash } from "react-bootstrap-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { register } from "../../../actions/userAction";
+import { Google, Facebook } from "react-bootstrap-icons"; // 👈 icons
 
 const RegisterScreen = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // Single object for all form fields
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -26,7 +27,6 @@ const RegisterScreen = () => {
     pic: "",
   });
 
-  // Field-level errors for inline validation
   const [fieldErrors, setFieldErrors] = useState({});
   const [uploading, setUploading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -40,7 +40,6 @@ const RegisterScreen = () => {
     if (userInfo) navigate("/mynotes");
   }, [navigate, userInfo]);
 
-  // Real-time input validation
   const validateField = (name, value) => {
     let message = "";
 
@@ -70,14 +69,12 @@ const RegisterScreen = () => {
     setFieldErrors((prev) => ({ ...prev, [name]: message }));
   };
 
-  // Handle input change with live validation
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     validateField(name, value);
   };
 
-  // Upload image to Cloudinary
   const postDetails = (file) => {
     if (!file)
       return setFieldErrors((prev) => ({
@@ -117,18 +114,24 @@ const RegisterScreen = () => {
       });
   };
 
-  // Submit handler
   const submitHandler = (e) => {
     e.preventDefault();
-
-    // Final validation before submit
     Object.keys(formData).forEach((key) => validateField(key, formData[key]));
-
     const hasErrors = Object.values(fieldErrors).some((msg) => msg);
     if (hasErrors) return;
 
     const { name, email, password, pic } = formData;
     dispatch(register(name, email, password, pic));
+  };
+
+  // 👇 placeholder for Google login
+  const handleGoogleLogin = () => {
+    alert("Google login clicked! (Integrate OAuth here)");
+  };
+
+  // 👇 placeholder for Facebook login
+  const handleFacebookLogin = () => {
+    alert("Facebook login clicked! (Integrate OAuth here)");
   };
 
   return (
@@ -138,7 +141,7 @@ const RegisterScreen = () => {
         style={{
           maxWidth: "500px",
           marginTop: "50px",
-          marginBottom: "60px", // 👈 extra bottom space for better look
+          marginBottom: "60px",
         }}
       >
         <h3 className="text-center mb-4 fw-bold">Create Your Account</h3>
@@ -252,7 +255,7 @@ const RegisterScreen = () => {
           </Form.Group>
 
           {/* Submit Button */}
-          <div className="d-grid mt-4">
+          <div className="d-grid mt-4 mb-3">
             <Button variant="primary" type="submit" disabled={loading}>
               {loading ? (
                 <>
@@ -266,6 +269,29 @@ const RegisterScreen = () => {
           </div>
         </Form>
 
+        {/* OR Divider */}
+        <div className="text-center my-3 text-muted">— or register with —</div>
+
+        {/* Social Login Buttons */}
+        <Stack gap={2}>
+          <Button
+            variant="outline-danger"
+            className="d-flex align-items-center justify-content-center gap-2"
+            onClick={handleGoogleLogin}
+          >
+            <Google /> Continue with Google
+          </Button>
+
+          <Button
+            variant="outline-primary"
+            className="d-flex align-items-center justify-content-center gap-2"
+            onClick={handleFacebookLogin}
+          >
+            <Facebook /> Continue with Facebook
+          </Button>
+        </Stack>
+
+        {/* Login Link */}
         <Row className="py-3 text-center">
           <Col>
             Already have an account?{" "}

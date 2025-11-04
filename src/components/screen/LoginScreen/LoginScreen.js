@@ -3,32 +3,28 @@ import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Row from "react-bootstrap/esm/Row";
 import Col from "react-bootstrap/Col";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Container from "react-bootstrap/Container";
 import { useDispatch, useSelector } from "react-redux";
 import Loading from "../../Loading";
 import ErrorMessage from "../../ErrorMessage";
 import { login, googleLogin, facebookLogin } from "../../../actions/userAction";
-import { GoogleLogin } from "@react-oauth/google";
-import { jwtDecode } from "jwt-decode";
-import "./LoginScreen.css";
+import { GoogleLogin, useGoogleLogin } from "@react-oauth/google";
+import { FaGoogle, FaFacebookF } from "react-icons/fa";
 import FacebookLogin from "@greatsumini/react-facebook-login";
-import { FaFacebookF } from "react-icons/fa";
+import "./LoginScreen.css";
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [searchParams] = useSearchParams();
 
   const userLogin = useSelector((state) => state.userLogin);
   const { loading, error, userInfo } = userLogin;
 
   useEffect(() => {
-    if (userInfo) {
-      navigate("/mynotes");
-    }
+    if (userInfo) navigate("/mynotes");
   }, [navigate, userInfo]);
 
   const submitHandler = (e) => {
@@ -36,26 +32,20 @@ const LoginScreen = () => {
     dispatch(login(email, password));
   };
 
-  const handleGoogleSuccess = async (credentialResponse) => {
-    const token = credentialResponse.credential;
-    dispatch(googleLogin(token));
+  const handleGoogleSuccess = (tokenResponse) => {
+    dispatch(googleLogin(tokenResponse.credential));
   };
 
   const handleGoogleError = () => {
     console.error("Google Sign-In failed");
   };
 
-  // Facebook Login Success Handler
   const handleFacebookSuccess = (response) => {
-    console.log("Facebook Login Success:", response);
-
-    // The response contains accessToken which we send to our backend
     if (response.accessToken) {
       dispatch(facebookLogin(response.accessToken));
     }
   };
 
-  // Facebook Login Failure Handler
   const handleFacebookFailure = (error) => {
     console.error("Facebook Login Failed:", error);
   };
@@ -135,27 +125,29 @@ const LoginScreen = () => {
             </Form>
 
             {/* Divider + Social Buttons */}
-            <div className="mt-3 text-center">
-              <p>or</p>
+            <div className="mt-4 text-center">
+              <p className="text-muted mb-3">or continue with</p>
 
-              {/* Google Button */}
-              
-              <div className="d-flex justify-content-center mb-3">
-                <div className="w-49   ">
+              <div className="d-flex justify-content-center gap-3 flex-wrap">
+                {/* Custom Google Button */}
+                <div style={{ flex: "1 1 45%" }}>
                   <GoogleLogin
                     onSuccess={handleGoogleSuccess}
                     onError={handleGoogleError}
-                    shape="pill"
-                    size="large"
-                    width="100%"
-                
+                    render={({ onClick }) => (
+                      <button
+                        onClick={onClick}
+                        className="btn btn-light border d-flex align-items-center justify-content-center gap-2 w-100 py-2 rounded-pill shadow-sm"
+                      >
+                        <FaGoogle color="#DB4437" size={18} />
+                        <span>Sign in with Google</span>
+                      </button>
+                    )}
                   />
                 </div>
-              </div>
 
-              {/* Facebook Button */}
-              <div className="d-flex justify-content-center mb-3">
-                <div className="w-49">
+                {/* Custom Facebook Button */}
+                <div style={{ flex: "1 1 45%" }}>
                   <FacebookLogin
                     appId={process.env.REACT_APP_FACEBOOK_APP_ID}
                     onSuccess={handleFacebookSuccess}
@@ -163,10 +155,11 @@ const LoginScreen = () => {
                     render={({ onClick }) => (
                       <button
                         onClick={onClick}
-                        className="btn btn-outline-dark d-flex align-items-center justify-content-center gap-2 w-100 py-2  rounded-pill"
+                        className="btn btn-primary d-flex align-items-center justify-content-center gap-2 w-100 py-2 rounded-pill shadow-sm"
+                        style={{ backgroundColor: "#1877F2", border: "none" }}
                       >
                         <FaFacebookF size={18} />
-                        <span>Sign in Facebook</span>
+                        <span>Sign in with Facebook</span>
                       </button>
                     )}
                   />

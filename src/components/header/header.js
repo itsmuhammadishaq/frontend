@@ -47,7 +47,7 @@ function Header() {
           as={Link}
           to="/"
           className="fw-bold fs-4 text-white"
-          style={{ letterSpacing: "0.5px" }}
+          style={{ letterSpacing: "0.2px" }}
         >
           📝 NoteZipper
         </Navbar.Brand>
@@ -104,11 +104,11 @@ function Header() {
                   />
 
                   <NavDropdown
-                    title={
-                      <span className="fw-semibold text-white d-flex align-items-center jsutify-content-center">
-                        {userInfo?.name}
-                      </span>
-                    }
+                    // title={
+                    //   <span className="fw-semibold text-white d-flex align-items-center jsutify-content-center">
+                    //     {userInfo?.name}
+                    //   </span>
+                    // }
                     id="navbarScrollingDropdown"
                     align="end"
                     menuVariant="light"

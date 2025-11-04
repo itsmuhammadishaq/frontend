@@ -84,7 +84,12 @@ const ProfileScreen = () => {
 
   return (
     <MainScreen title="Edit Profile">
-      <div className="d-flex justify-content-center align-items-center mt-4">
+      <div
+        className="d-flex justify-content-center align-items-center mt-4 pb-5"
+        style={{
+          paddingBottom: "80px", // 👈 Added bottom padding
+        }}
+      >
         <Card
           style={{
             maxWidth: "800px",
@@ -195,7 +200,7 @@ const ProfileScreen = () => {
                   />
                 </Form.Group>
 
-                <Form.Group controlId="confirmPassword" className="mb-3">
+                <Form.Group controlId="confirmPassword" className="mb-4">
                   <Form.Label className="fw-semibold">
                     Confirm Password
                   </Form.Label>
@@ -218,7 +223,7 @@ const ProfileScreen = () => {
                     className="px-4 py-2"
                     style={{
                       borderRadius: "10px",
-                      minWidth: "150px",
+                      minWidth: "160px",
                       fontWeight: "600",
                     }}
                   >
