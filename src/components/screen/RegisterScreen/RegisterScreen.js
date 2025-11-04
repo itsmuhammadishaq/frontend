@@ -310,7 +310,7 @@ const RegisterScreen = () => {
               render={({ onClick }) => (
                 <button
                   onClick={onClick}
-                  className="btn btn-primary d-flex align-items-center justify-content-center gap-2 w-100 py-2 rounded-pill shadow-sm"
+                  className="btn btn-primary d-flex align-items-center justify-content-center gap-2 w-100 py-2  shadow-sm"
                   style={{ backgroundColor: "#1877F2", border: "none" }}
                 >
                   <FaFacebookF size={18} />
