@@ -119,13 +119,13 @@ const LoginScreen = () => {
 
               <div className="d-flex justify-content-between align-items-center">
                 <div></div>
-                <Button
+                {/* <Button
                   variant="link"
                   className="p-0 text-decoration-none"
                   onClick={() => setShowForgot(true)}
                 >
                   Forgot password?
-                </Button>
+                </Button> */}
               </div>
 
               <Button
@@ -185,10 +185,10 @@ const LoginScreen = () => {
       </Row>
 
       {/* ✅ Forgot Password Modal */}
-      <ForgotPasswordModal
+      {/* <ForgotPasswordModal
         show={showForgot}
         handleClose={() => setShowForgot(false)}
-      />
+      /> */}
     </Container>
   );
 };
