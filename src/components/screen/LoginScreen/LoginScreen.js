@@ -1,22 +1,33 @@
 import React, { useEffect, useState } from "react";
-import Form from "react-bootstrap/Form";
-import Button from "react-bootstrap/Button";
-import Row from "react-bootstrap/esm/Row";
-import Col from "react-bootstrap/Col";
+import {
+  Form,
+  Button,
+  Row,
+  Col,
+  Container,
+  Modal,
+  Spinner,
+} from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
-import Container from "react-bootstrap/Container";
 import { useDispatch, useSelector } from "react-redux";
 import Loading from "../../Loading";
 import ErrorMessage from "../../ErrorMessage";
 import { login, googleLogin, facebookLogin } from "../../../actions/userAction";
-import { GoogleLogin, useGoogleLogin } from "@react-oauth/google";
-import { FaGoogle, FaFacebookF } from "react-icons/fa";
+import { GoogleLogin } from "@react-oauth/google";
 import FacebookLogin from "@greatsumini/react-facebook-login";
+import { FaGoogle, FaFacebookF } from "react-icons/fa";
+import axios from "axios";
 import "./LoginScreen.css";
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showForgot, setShowForgot] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [forgotError, setForgotError] = useState("");
+  const [forgotSuccess, setForgotSuccess] = useState("");
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -27,32 +38,52 @@ const LoginScreen = () => {
     if (userInfo) navigate("/mynotes");
   }, [navigate, userInfo]);
 
+  // Login submit
   const submitHandler = (e) => {
     e.preventDefault();
     dispatch(login(email, password));
   };
 
+  // Google login success/fail
   const handleGoogleSuccess = (tokenResponse) => {
     dispatch(googleLogin(tokenResponse.credential));
   };
+  const handleGoogleError = () => console.error("Google Sign-In failed");
 
-  const handleGoogleError = () => {
-    console.error("Google Sign-In failed");
-  };
-
+  // Facebook login success/fail
   const handleFacebookSuccess = (response) => {
-    if (response.accessToken) {
-      dispatch(facebookLogin(response.accessToken));
-    }
+    if (response.accessToken) dispatch(facebookLogin(response.accessToken));
   };
-
-  const handleFacebookFailure = (error) => {
+  const handleFacebookFailure = (error) =>
     console.error("Facebook Login Failed:", error);
+
+  // Forgot Password submit
+  const handleForgotSubmit = async (e) => {
+    e.preventDefault();
+    setForgotLoading(true);
+    setForgotError("");
+    setForgotSuccess("");
+
+    try {
+      const { data } = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/api/users/forgot-password`,
+        { email: forgotEmail }
+      );
+      setForgotSuccess(data.message || "Password reset email sent!");
+      setForgotLoading(false);
+    } catch (err) {
+      setForgotError(
+        err.response?.data?.message ||
+          "Failed to send password reset email. Try again."
+      );
+      setForgotLoading(false);
+    }
   };
 
   return (
     <Container>
       <Row md={2}>
+        {/* Left illustration */}
         <Col
           className="d-none d-sm-block"
           style={{ backgroundColor: "#F9FAFA", paddingTop: 40 }}
@@ -70,6 +101,7 @@ const LoginScreen = () => {
           </div>
         </Col>
 
+        {/* Right: Login form */}
         <Col xs={12} md={6} className="mx-auto my-4">
           <div className="loginContainer">
             {error && <ErrorMessage variant="danger">{error}</ErrorMessage>}
@@ -113,6 +145,17 @@ const LoginScreen = () => {
                   required
                 />
               </Form.Group>
+
+              <div className="d-flex justify-content-between align-items-center">
+                <div></div>
+                <Button
+                  variant="link"
+                  className="p-0 text-decoration-none"
+                  onClick={() => setShowForgot(true)}
+                >
+                  Forgot password?
+                </Button>
+              </div>
 
               <Button
                 type="submit"
@@ -169,6 +212,59 @@ const LoginScreen = () => {
           </div>
         </Col>
       </Row>
+
+      {/* Forgot Password Modal */}
+      <Modal
+        show={showForgot}
+        onHide={() => {
+          setShowForgot(false);
+          setForgotError("");
+          setForgotSuccess("");
+          setForgotEmail("");
+        }}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Reset your password</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {forgotError && (
+            <div className="alert alert-danger py-2">{forgotError}</div>
+          )}
+          {forgotSuccess && (
+            <div className="alert alert-success py-2">{forgotSuccess}</div>
+          )}
+
+          <Form onSubmit={handleForgotSubmit}>
+            <Form.Group controlId="forgotEmail" className="mb-3">
+              <Form.Label>Enter your email address</Form.Label>
+              <Form.Control
+                type="email"
+                value={forgotEmail}
+                placeholder="Enter your email"
+                onChange={(e) => setForgotEmail(e.target.value)}
+                required
+              />
+            </Form.Group>
+
+            <Button
+              type="submit"
+              variant="primary"
+              className="w-100"
+              disabled={forgotLoading}
+            >
+              {forgotLoading ? (
+                <>
+                  <Spinner animation="border" size="sm" className="me-2" />
+                  Sending...
+                </>
+              ) : (
+                "Send Reset Link"
+              )}
+            </Button>
+          </Form>
+        </Modal.Body>
+      </Modal>
     </Container>
   );
 };
