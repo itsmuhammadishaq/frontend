@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  Form,
-  Button,
-  Row,
-  Col,
-  Container,
-} from "react-bootstrap";
+import { Form, Button, Row, Col, Container } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Loading from "../../Loading";
@@ -14,7 +8,7 @@ import { login, googleLogin, facebookLogin } from "../../../actions/userAction";
 import { GoogleLogin } from "@react-oauth/google";
 import FacebookLogin from "@greatsumini/react-facebook-login";
 import { FaGoogle, FaFacebookF } from "react-icons/fa";
-import ForgotPasswordModal from "../frogetpassword/forgetpasswordModel"
+import ForgotPasswordModal from "../frogetpassword/forgetpasswordModel";
 import "./LoginScreen.css";
 
 const LoginScreen = () => {
@@ -25,48 +19,43 @@ const LoginScreen = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const userLogin = useSelector((state) => state.userLogin);
-  const { loading, error, userInfo } = userLogin;
+  const { loading, error, userInfo } = useSelector((state) => state.userLogin);
 
   useEffect(() => {
     if (userInfo) navigate("/mynotes");
   }, [navigate, userInfo]);
 
-  // ✅ Normal login
+  // Normal login
   const submitHandler = (e) => {
     e.preventDefault();
     dispatch(login(email, password));
   };
 
-  // ✅ Google login
+  // Google login
   const handleGoogleSuccess = (tokenResponse) => {
     dispatch(googleLogin(tokenResponse.credential));
   };
   const handleGoogleError = () => console.error("Google Sign-In failed");
 
-  // ✅ Facebook login
+  // Facebook login
   const handleFacebookSuccess = (response) => {
     if (response.accessToken) dispatch(facebookLogin(response.accessToken));
   };
-  const handleFacebookFailure = (error) =>
-    console.error("Facebook Login Failed:", error);
+  const handleFacebookFailure = (error) => console.error("Facebook Login Failed:", error);
 
   return (
     <Container>
-      <Row md={2}>
+      <Row>
         {/* LEFT SIDE ILLUSTRATION */}
-        <Col
-          className="d-none d-sm-block"
-          style={{ backgroundColor: "#F9FAFA", paddingTop: 40 }}
-        >
+        <Col className="d-none d-sm-block" style={{ backgroundColor: "#F9FAFA", paddingTop: 40 }}>
           <div className="loginLeft text-center">
             <h2>Hi, Welcome back 👋</h2>
             <p>Work more effectively with optimized workflows.</p>
             <img
-              height={"100%"}
-              width={"90%"}
+              height="100%"
+              width="90%"
               src="/illustration-dashboard.webp"
-              alt="login illustration"
+              alt="Dashboard illustration for login page"
               className="loginImage"
             />
           </div>
@@ -83,10 +72,7 @@ const LoginScreen = () => {
                 <h3>Sign in to your account</h3>
                 <p className="mb-3">
                   Don’t have an account?{" "}
-                  <Link
-                    to="/register"
-                    className="text-primary text-decoration-none"
-                  >
+                  <Link to="/register" className="text-primary text-decoration-none">
                     Get started
                   </Link>
                 </p>
@@ -138,7 +124,7 @@ const LoginScreen = () => {
               </Button>
             </Form>
 
-            {/* DIVIDER + SOCIAL LOGIN */}
+            {/* SOCIAL LOGIN */}
             <div className="mt-4 text-center">
               <p className="text-muted mb-3">or continue with</p>
 
@@ -152,6 +138,7 @@ const LoginScreen = () => {
                       <button
                         onClick={onClick}
                         className="btn btn-light border d-flex align-items-center justify-content-center gap-2 w-100 py-2 rounded-pill shadow-sm"
+                        disabled={loading}
                       >
                         <FaGoogle color="#DB4437" size={18} />
                         <span>Sign in with Google</span>
@@ -169,8 +156,9 @@ const LoginScreen = () => {
                     render={({ onClick }) => (
                       <button
                         onClick={onClick}
-                        className="btn btn-primary d-flex align-items-center justify-content-center gap-2 w-100 py-2  shadow-sm"
+                        className="btn btn-primary d-flex align-items-center justify-content-center gap-2 w-100 py-2 shadow-sm"
                         style={{ backgroundColor: "#1877F2", border: "none" }}
+                        disabled={loading}
                       >
                         <FaFacebookF size={18} />
                         <span>Sign in with Facebook</span>
@@ -184,11 +172,8 @@ const LoginScreen = () => {
         </Col>
       </Row>
 
-      {/* ✅ Forgot Password Modal */}
-      <ForgotPasswordModal
-        show={showForgot}
-        handleClose={() => setShowForgot(false)}
-      />
+      {/* FORGOT PASSWORD MODAL */}
+      <ForgotPasswordModal show={showForgot} handleClose={() => setShowForgot(false)} />
     </Container>
   );
 };
