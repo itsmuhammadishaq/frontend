@@ -9,6 +9,7 @@ import {
   Container,
   Row,
   Col,
+  InputGroup,
 } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { listNotes } from "../../../actions/notesActions";
@@ -18,6 +19,7 @@ import axios from "axios";
 import NoteModal from "../models/models";
 import DeleteNoteModal from "../modal/modal";
 import { useNavigate } from "react-router-dom";
+import { Search, Edit2, Trash2 } from "lucide-react";
 
 const MyNotes = () => {
   const [checkedNotes, setCheckedNotes] = useState([]);
@@ -32,7 +34,6 @@ const MyNotes = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // ✅ Use default empty array to avoid filter errors
   const { loading, notes = [], error } = useSelector((state) => state.noteList);
   const { userInfo } = useSelector((state) => state.userLogin);
   const { success: successCreate } = useSelector((state) => state.noteCreate);
@@ -42,9 +43,6 @@ const MyNotes = () => {
     success: successDelete,
   } = useSelector((state) => state.noteDelete);
 
-  console.log(notes, "notes");
-
-  // ✅ Toggle note completion
   const handleCheck = async (id, e) => {
     e.stopPropagation();
     const updatedNotes = localNotes.map((note) =>
@@ -72,7 +70,6 @@ const MyNotes = () => {
     setShowDeleteModal(true);
   };
 
-  // ✅ Load notes from backend
   useEffect(() => {
     if (!userInfo) {
       navigate("/");
@@ -81,7 +78,6 @@ const MyNotes = () => {
     dispatch(listNotes());
   }, [dispatch, successCreate, navigate, userInfo, successDelete]);
 
-  // ✅ Sync local notes with redux
   useEffect(() => {
     if (Array.isArray(notes)) {
       setLocalNotes(notes);
@@ -92,7 +88,6 @@ const MyNotes = () => {
     }
   }, [notes]);
 
-  // ✅ Sorting & filtering
   const sortedNotes = [...localNotes].sort((a, b) =>
     a.completed === b.completed ? 0 : a.completed ? 1 : -1
   );
@@ -103,7 +98,7 @@ const MyNotes = () => {
   );
 
   return (
-    <Container fluid className="px-2 px-md-4">
+    <Container fluid className="px-3 px-md-4 py-3 bg-light min-vh-100">
       <MainScreen title={`Welcome Back ${userInfo?.name || ""}`}>
         {/* Modals */}
         <NoteModal
@@ -117,35 +112,38 @@ const MyNotes = () => {
           handleClose={() => setShowDeleteModal(false)}
           note={noteToDelete}
         />
-        {/* Header */}
-        <Row className="align-items-center mb-3 justify-content-between g-2">
-          <Col xs={12} sm={8} md={6} lg={5}>
-            <Form className="w-100">
+
+        {/* Search + Create */}
+        <Row className="align-items-center mb-4 justify-content-between g-3">
+          <Col xs={12} md={6}>
+            <InputGroup className="shadow-sm rounded-pill overflow-hidden">
+              <InputGroup.Text className="bg-white border-0 ps-3">
+                <Search size={18} className="text-secondary" />
+              </InputGroup.Text>
               <Form.Control
                 type="search"
-                placeholder="Search your notes..."
-                aria-label="Search"
+                placeholder="Search notes..."
                 onChange={(e) => setSearch(e.target.value)}
+                className="border-0 shadow-none"
               />
-            </Form>
+            </InputGroup>
           </Col>
-
-          <Col xs={12} sm="auto">
+          <Col xs={12} md="auto">
             <Button
-              variant="primary"
-              className="w-100 mt-2 mt-sm-0"
-              style={{ minWidth: "150px" }}
+              variant="dark"
+              className="px-4 py-2 shadow-sm fw-semibold rounded-pill w-100"
               onClick={() => {
                 setModalMode("create");
                 setSelectedNote(null);
                 setOpen(true);
               }}
             >
-              + Create Note
+              + New Note
             </Button>
           </Col>
         </Row>
-        {/* Alerts & Loaders */}
+
+        {/* Alerts */}
         {errorDelete && (
           <ErrorMessage variant="danger">{errorDelete}</ErrorMessage>
         )}
@@ -153,96 +151,102 @@ const MyNotes = () => {
         {error && <ErrorMessage variant="danger">{error}</ErrorMessage>}
         {loading && !notes?.length && <Loading />}
         {!loading && filteredNotes.length === 0 && (
-          <p className="text-center text-muted mt-4">No notes found.</p>
+          <p className="text-center text-muted mt-5 fs-5">No notes found.</p>
         )}
-        {/* Notes List */}
-        {filteredNotes
-          .slice()
-          .reverse()
-          .map((note) => (
-            <Accordion key={note._id} className="mb-4">
-              {" "}
-              <Card
-                className="shadow-sm"
-                style={{
-                  borderRadius: "1px",
-                  border: note.completed
-                    ? "2px solid green"
-                    : "1px solid transparent",
-                }}
-              >
-                {" "}
-                <Accordion.Header>
-                  {" "}
-                  <Form.Check
-                    className="me-3"
-                    checked={note.completed || false}
-                    onChange={(e) => handleCheck(note._id, e)}
-                    onClick={(e) => e.stopPropagation()}
-                  />{" "}
-                  <span
-                    style={{
-                      color: "black",
-                      flex: 1,
-                      cursor: "pointer",
-                      fontSize: "1rem",
-                      textDecoration: note.completed ? "line-through" : "none",
-                    }}
-                  >
-                    {" "}
-                    {note.title}{" "}
-                  </span>{" "}
-                  <div className="d-flex gap-3" style={{ marginRight: 16 }}>
-                    {" "}
-                    <Button
-                      size="sm"
-                      variant="success"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedNote(note);
-                        setModalMode("edit");
-                        setOpen(true);
-                      }}
+
+        {/* Notes */}
+        <div className="d-flex flex-column gap-3">
+          {filteredNotes
+            .slice()
+            .reverse()
+            .map((note) => (
+              <Accordion key={note._id}>
+                <Card
+                  className={`shadow-sm rounded-3 overflow-hidden note-card ${
+                    note.completed
+                      ? "border-success border-3"
+                      : "border-light border-1"
+                  }`}
+                >
+                  <Accordion.Header>
+                    <div className="d-flex align-items-center w-100 justify-content-between">
+                      <div className="d-flex align-items-center flex-grow-1">
+                        <Form.Check
+                          className="me-3"
+                          checked={note.completed || false}
+                          onChange={(e) => handleCheck(note._id, e)}
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                        <span
+                          className={`${
+                            note.completed
+                              ? "text-decoration-line-through text-muted"
+                              : ""
+                          }`}
+                          style={{ fontSize: "1rem", fontWeight: 500 }}
+                        >
+                          {note.title}
+                        </span>
+                      </div>
+
+                      {/* Buttons with spacing */}
+                      <div className="d-flex gap-2 me-2">
+                        <Button
+                          size="sm"
+                          variant="outline-success"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedNote(note);
+                            setModalMode("edit");
+                            setOpen(true);
+                          }}
+                          className="d-flex align-items-center gap-1"
+                        >
+                          <Edit2 size={16} /> Edit
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline-danger"
+                          disabled={loadingDelete}
+                          onClick={(e) => confirmDeleteHandler(note, e)}
+                          className="d-flex align-items-center gap-1"
+                        >
+                          <Trash2 size={16} /> Delete
+                        </Button>
+                      </div>
+                    </div>
+                  </Accordion.Header>
+
+                  <Accordion.Body className="bg-white py-3 px-4">
+                    <div className="d-flex justify-content-between align-items-center mb-2 flex-wrap">
+                      <Badge
+                        bg="success"
+                        text="light"
+                        className="px-3 py-2 fw-normal"
+                      >
+                        {note.category || "Uncategorized"}
+                      </Badge>
+                      <small className="text-muted">
+                        Created on{" "}
+                        <strong>
+                          {note.createdAt
+                            ? note.createdAt.substring(0, 10)
+                            : "N/A"}
+                        </strong>
+                      </small>
+                    </div>
+                    <p
+                      className="text-secondary mb-0"
+                      style={{ whiteSpace: "pre-line" }}
                     >
-                      {" "}
-                      Edit{" "}
-                    </Button>{" "}
-                    <Button
-                      size="sm"
-                      variant="danger"
-                      disabled={loadingDelete}
-                      onClick={(e) => confirmDeleteHandler(note, e)}
-                    >
-                      {" "}
-                      Delete{" "}
-                    </Button>{" "}
-                  </div>{" "}
-                </Accordion.Header>{" "}
-                <Accordion.Body>
-                  {" "}
-                  <h6>
-                    {" "}
-                    <Badge bg="success">Category - {note.category}</Badge>{" "}
-                  </h6>{" "}
-                  <blockquote className="blockquote mb-0">
-                    {" "}
-                    <p>{note.content}</p>{" "}
-                    <footer className="blockquote-footer">
-                      {" "}
-                      Created on{" "}
-                      <cite>
-                        {" "}
-                        {note.createdAt
-                          ? note.createdAt.substring(0, 10)
-                          : "N/A"}{" "}
-                      </cite>{" "}
-                    </footer>{" "}
-                  </blockquote>{" "}
-                </Accordion.Body>{" "}
-              </Card>{" "}
-            </Accordion>
-          ))}{" "}
-      </MainScreen>{" "}
+                      {note.content}
+                    </p>
+                  </Accordion.Body>
+                </Card>
+              </Accordion>
+            ))}
+        </div>
+      </MainScreen>
     </Container>
   );
 };

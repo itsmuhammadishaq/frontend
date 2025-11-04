@@ -1,0 +1,20 @@
+.navbar {
+  transition: all 0.3s ease;
+}
+
+.navbar-brand:hover {
+  color: #d1e8ff !important;
+}
+
+.nav-link:hover {
+  text-decoration: underline;
+}
+
+.custom-dropdown .dropdown-menu {
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.form-control:focus {
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}

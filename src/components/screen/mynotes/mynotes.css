@@ -1,0 +1,36 @@
+.note-card {
+  border-left: 4px solid #0d6efd;
+  transition: all 0.2s ease-in-out;
+}
+
+.note-card.note-completed {
+  border-left: 4px solid #198754; /* green border when completed */
+  box-shadow: 0 4px 12px rgba(25, 135, 84, 0.15);
+}
+
+.note-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+.accordion-button {
+  background-color: #fff !important;
+  box-shadow: none !important;
+  padding: 0.75rem 1rem;
+}
+
+.accordion-button:not(.collapsed) {
+  background-color: #f8f9fa !important;
+  color: #0d6efd !important;
+}
+
+.accordion-button:focus {
+  box-shadow: none !important;
+}
+
+button.btn-sm {
+  min-width: 80px;
+}
+.note-card {
+  transition: border-color 0.3s ease;
+}

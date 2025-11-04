@@ -1,15 +1,19 @@
-.profilePic {
-  width: 60%;
-  display: flex;
-  align-items: center;
-  padding: 20px;
+.profilePic:hover {
+  transform: scale(1.05);
+  transition: transform 0.3s ease;
+  box-shadow: 0 0 10px rgba(13, 110, 253, 0.4);
 }
-.profileContainer {
-  display: flex;
-  margin: 20px;
+
+.card {
+  background: #fff;
+  border-radius: 16px;
 }
-@media only screen and (max-width: 768px) {
-  .profileContainer {
-    flex-direction: column-reverse;
-  }
+
+label {
+  color: #333;
+}
+
+.form-control:focus {
+  border-color: #0d6efd;
+  box-shadow: 0 0 4px rgba(13, 110, 253, 0.25);
 }

@@ -1,82 +1,106 @@
-.main {
-  min-height: 93vh;
-  display: flex;
-  align-items: center;
-  justify-content: center; /* optional if you want content centered */
-  background-image: url('../../../../public/background1.jpg');
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  
+/* 🌤 Light Gradient Background */
+.landing-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f9fbfd, #eaf3ff);
+  color: #212529;
+  overflow: hidden;
+  position: relative;
+  padding: 60px 0;
 }
 
-.title{
-    font-size: 75px;
-    text-align: center;
+/* 📝 Title Styling */
+.landing-title {
+  font-size: 3.2rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #0d6efd;
 }
-.subtitle{
-    font-size: 25px;
-    padding-top: 10px;
-    text-align: center;
+
+.highlight {
+  background: linear-gradient(90deg, #0d6efd, #5bc0de);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
-.intro-text{
-    width:100%;
-    text-align: 'center';
+
+/* 💬 Subtitle */
+.landing-subtitle {
+  font-size: 1.25rem;
+  color: #555;
+  max-width: 700px;
+  margin: 0 auto;
 }
-.buttomContainer {
-  margin-top: 50px;
-  display: flex;               
-  justify-content: space-evenly;      
-  align-items: center;          
-                   
+
+/* 🔘 Buttons */
+.landing-btn {
+  min-width: 160px;
+  font-weight: 600;
+  border-radius: 25px;
+  transition: all 0.3s ease;
+  letter-spacing: 0.5px;
 }
-.landingbutton{
-    width: 200px;
-    height: 55px;
+
+.primary-btn {
+  background-color: #0d6efd !important;
+  color: #fff !important;
+  border: none;
 }
-@media only screen and (min-width: 769px) and (max-width: 1199px) {
-  .title {
-    font-size: 50px;
-    padding: 0 100px;
+
+.primary-btn:hover {
+  background-color: #0b5ed7 !important;
+  transform: translateY(-2px);
+}
+
+.secondary-btn {
+  border: 2px solid #0d6efd !important;
+  color: #0d6efd !important;
+  background-color: transparent !important;
+}
+
+.secondary-btn:hover {
+  background-color: #e7f1ff !important;
+  transform: translateY(-2px);
+}
+
+/* 🌟 Features Section */
+.feature-row {
+  margin-top: 40px;
+}
+
+.feature-card {
+  background: white;
+  border-radius: 16px;
+  padding: 25px 20px;
+  box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.feature-icon {
+  font-size: 2.5rem;
+  color: #0d6efd;
+  margin-bottom: 15px;
+}
+
+/* 🪶 Responsive */
+@media (max-width: 768px) {
+  .landing-title {
+    font-size: 2.3rem;
   }
 
-  .buttomContainer {
-    gap: 30px; /* slightly wider spacing */
+  .landing-subtitle {
+    font-size: 1.1rem;
   }
-}
-@media only screen and (min-width:1200px){
-    
-.buttomContainer {
-   padding: 0  200px;        
-                   
-}
-.title{
-    padding: 0 100px;
-}
 
+  .landing-btn {
+    width: 100%;
+    margin-bottom: 10px;
+  }
 
-}
-
-@media only screen and (max-width:768px){
-    .title{
-        font-size: 35px;
-        padding-top: 10px;
-    }
-    .landingbutton{
-    width: 50px;
-    height: 30px;
-}
-.buttomContainer {
-  margin-top: 0px;
-  display: flex;               
-  justify-content: space-evenly;      
-  align-items: center;          
-                   
-}
-.subtitle{
-    font-size: 15px;
-    padding-top: 0px;
-    text-align: center;
-}
-
+  .feature-card {
+    padding: 20px;
+  }
 }

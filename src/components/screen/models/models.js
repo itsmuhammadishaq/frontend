@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Button, Card, Form } from "react-bootstrap";
+import { Modal, Button, Form, Spinner } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
-import ReactMarkdown from "react-markdown";
-import { createNoteAction, updateNoteAction } from "../../../actions/notesActions";
+import {
+  createNoteAction,
+  updateNoteAction,
+} from "../../../actions/notesActions";
 import ErrorMessage from "../../ErrorMessage";
-import Loading from "../../Loading";
+import { FaPlus, FaRedo, FaEdit } from "react-icons/fa";
 
 function NoteModal({ show, handleClose, mode = "create", noteData = null }) {
   const dispatch = useDispatch();
 
-  // Local states for form fields
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [category, setCategory] = useState("");
@@ -33,7 +34,6 @@ function NoteModal({ show, handleClose, mode = "create", noteData = null }) {
     }
   }, [mode, noteData, show]);
 
-  // Reset handler
   const resetHandler = () => {
     setTitle("");
     setContent("");
@@ -47,7 +47,7 @@ function NoteModal({ show, handleClose, mode = "create", noteData = null }) {
 
     if (mode === "create") {
       dispatch(createNoteAction(title, content, category));
-    } else if (mode === "edit") {
+    } else {
       dispatch(updateNoteAction(noteData._id, title, content, category));
     }
 
@@ -55,73 +55,155 @@ function NoteModal({ show, handleClose, mode = "create", noteData = null }) {
     resetHandler();
   };
 
+  const isLoading = loadingCreate || loadingUpdate;
+
   return (
-    <Modal show={show} onHide={handleClose} centered>
-      <Modal.Header closeButton>
-        <Modal.Title>{mode === "create" ? "Create Note" : "Edit Note"}</Modal.Title>
+    <Modal
+      show={show}
+      onHide={handleClose}
+      centered
+      backdrop="static"
+      keyboard={!isLoading}
+    >
+      {/* Header */}
+      <Modal.Header
+        closeButton
+        style={{
+          borderBottom: "none",
+          background: "#f8f9fa",
+        }}
+      >
+        <Modal.Title style={{ fontWeight: 600, fontSize: "1.25rem" }}>
+          {mode === "create" ? "Create New Note" : "Edit Note"}
+        </Modal.Title>
       </Modal.Header>
 
-      <Modal.Body>
-        <Form onSubmit={submitHandler}>
-          {(errorCreate || errorUpdate) && (
-            <ErrorMessage variant="danger">{errorCreate || errorUpdate}</ErrorMessage>
-          )}
+      {/* Body */}
+      <Modal.Body
+        style={{
+          padding: "1.5rem",
+          backgroundColor: "#fff",
+        }}
+      >
+        {(errorCreate || errorUpdate) && (
+          <ErrorMessage variant="danger">
+            {errorCreate || errorUpdate}
+          </ErrorMessage>
+        )}
 
+        <Form onSubmit={submitHandler}>
+          {/* Title */}
           <Form.Group controlId="title" className="mb-3">
-            <Form.Label>Title</Form.Label>
+            <Form.Label style={{ fontWeight: 500 }}>Title</Form.Label>
             <Form.Control
               type="text"
-              value={title}
               placeholder="Enter the title"
+              value={title}
               onChange={(e) => setTitle(e.target.value)}
+              style={{
+                borderRadius: "8px",
+                borderColor: "#ccc",
+                padding: "10px",
+              }}
             />
           </Form.Group>
 
+          {/* Content */}
           <Form.Group controlId="content" className="mb-3">
-            <Form.Label>Content</Form.Label>
+            <Form.Label style={{ fontWeight: 500 }}>Content</Form.Label>
             <Form.Control
               as="textarea"
               rows={4}
+              placeholder="Write your note content..."
               value={content}
-              placeholder="Enter the content"
               onChange={(e) => setContent(e.target.value)}
+              style={{
+                borderRadius: "8px",
+                borderColor: "#ccc",
+                padding: "10px",
+              }}
             />
           </Form.Group>
 
-          {content && (
-            <Card className="mb-3">
-              <Card.Header>Note Preview</Card.Header>
-              <Card.Body>
-                <ReactMarkdown>{content}</ReactMarkdown>
-              </Card.Body>
-            </Card>
-          )}
-
-          <Form.Group controlId="category" className="mb-3">
-            <Form.Label>Category</Form.Label>
+          {/* Category */}
+          <Form.Group controlId="category" className="mb-4">
+            <Form.Label style={{ fontWeight: 500 }}>Category</Form.Label>
             <Form.Control
               type="text"
+              placeholder="Enter a category"
               value={category}
-              placeholder="Enter the category"
               onChange={(e) => setCategory(e.target.value)}
+              style={{
+                borderRadius: "8px",
+                borderColor: "#ccc",
+                padding: "10px",
+              }}
             />
           </Form.Group>
 
-          {(loadingCreate || loadingUpdate) && <Loading size={50} />}
-
-          <div className="d-flex justify-content-end">
-            <Button type="submit" variant="primary">
-              {mode === "create" ? "Create" : "Update"}
+          {/* Buttons */}
+          <div
+            className="d-flex justify-content-end gap-2"
+            style={{ marginTop: "1rem" }}
+          >
+            <Button
+              type="submit"
+              variant="primary"
+              disabled={isLoading}
+              style={{
+                minWidth: "110px",
+                borderRadius: "8px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "0.4rem",
+              }}
+            >
+              {isLoading ? (
+                <>
+                  <Spinner animation="border" size="sm" /> Saving...
+                </>
+              ) : mode === "create" ? (
+                <>
+                  <FaPlus size={13} /> Create
+                </>
+              ) : (
+                <>
+                  <FaEdit size={13} /> Update
+                </>
+              )}
             </Button>
-            <Button variant="success" className="ms-2" onClick={resetHandler}>
-              Reset
+
+            <Button
+              variant="outline-success"
+              onClick={resetHandler}
+              disabled={isLoading}
+              style={{
+                borderRadius: "8px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "0.4rem",
+              }}
+            >
+              <FaRedo size={13} /> Reset
             </Button>
           </div>
         </Form>
       </Modal.Body>
 
-      <Modal.Footer>
-        <small>{mode === "create" ? "Creating" : "Editing"} on - {new Date().toLocaleDateString()}</small>
+      {/* Footer */}
+      <Modal.Footer
+        style={{
+          borderTop: "none",
+          background: "#f8f9fa",
+          justifyContent: "center",
+          fontSize: "0.85rem",
+          color: "#6c757d",
+        }}
+      >
+        {mode === "create" ? "Creating" : "Editing"} on{" "}
+        {new Date().toLocaleDateString()}
       </Modal.Footer>
     </Modal>
   );
