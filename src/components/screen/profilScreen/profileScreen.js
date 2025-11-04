@@ -8,12 +8,13 @@ import Loading from "../../Loading";
 import ErrorMessage from "../../ErrorMessage";
 import { useNavigate } from "react-router-dom";
 
+const DEFAULT_AVATAR =
+  "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg";
+
 const ProfileScreen = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [pic, setPic] = useState(
-    "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg"
-  );
+  const [pic, setPic] = useState(DEFAULT_AVATAR);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [picMessage, setPicMessage] = useState("");
@@ -27,20 +28,22 @@ const ProfileScreen = () => {
   const userUpdate = useSelector((state) => state.userUpdate);
   const { loading, error, success } = userUpdate;
 
+  // ✅ Load user info and fallback to default avatar if missing
   useEffect(() => {
     if (!userInfo) {
       navigate("/");
     } else {
       setName(userInfo.name);
       setEmail(userInfo.email);
-      setPic(userInfo.pic);
+      setPic(
+        userInfo.pic && userInfo.pic.trim() !== "" ? userInfo.pic : DEFAULT_AVATAR
+      );
     }
   }, [navigate, userInfo]);
 
+  // ✅ Handle Cloudinary upload
   const postDetails = (pics) => {
-    if (!pics) {
-      return setPicMessage("Please select an image");
-    }
+    if (!pics) return setPicMessage("Please select an image");
 
     setPicMessage(null);
     if (pics.type === "image/jpeg" || pics.type === "image/png") {
@@ -69,6 +72,7 @@ const ProfileScreen = () => {
     }
   };
 
+  // ✅ Handle form submission
   const submitHandler = (e) => {
     e.preventDefault();
     if (password !== confirmPassword) {
@@ -99,7 +103,11 @@ const ProfileScreen = () => {
             >
               <div className="position-relative mb-3">
                 <Image
-                  src={pic}
+                  src={pic || DEFAULT_AVATAR}
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = DEFAULT_AVATAR;
+                  }}
                   alt={name}
                   roundedCircle
                   style={{

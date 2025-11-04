@@ -134,19 +134,17 @@ const RegisterScreen = () => {
   return (
     <MainScreen title="Register">
       <div
-        className="loginContainer p-4 shadow rounded"
+        className="loginContainer p-4 pb-5 shadow rounded bg-white mx-auto"
         style={{
           maxWidth: "500px",
-          margin: "auto",
-          backgroundColor: "#fff",
+          marginTop: "50px",
+          marginBottom: "60px", // 👈 extra bottom space for better look
         }}
       >
         <h3 className="text-center mb-4 fw-bold">Create Your Account</h3>
 
         {error && (
-          <div className="alert alert-danger text-center py-2">
-            {error}
-          </div>
+          <div className="alert alert-danger text-center py-2">{error}</div>
         )}
 
         <Form onSubmit={submitHandler} noValidate>
@@ -221,7 +219,9 @@ const RegisterScreen = () => {
               />
               <Button
                 variant="outline-secondary"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                onClick={() =>
+                  setShowConfirmPassword(!showConfirmPassword)
+                }
                 tabIndex={-1}
               >
                 {showConfirmPassword ? <EyeSlash /> : <Eye />}
@@ -251,6 +251,7 @@ const RegisterScreen = () => {
             </Form.Control.Feedback>
           </Form.Group>
 
+          {/* Submit Button */}
           <div className="d-grid mt-4">
             <Button variant="primary" type="submit" disabled={loading}>
               {loading ? (
