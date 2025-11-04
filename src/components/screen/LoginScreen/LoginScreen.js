@@ -5,8 +5,6 @@ import {
   Row,
   Col,
   Container,
-  Modal,
-  Spinner,
 } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -16,17 +14,13 @@ import { login, googleLogin, facebookLogin } from "../../../actions/userAction";
 import { GoogleLogin } from "@react-oauth/google";
 import FacebookLogin from "@greatsumini/react-facebook-login";
 import { FaGoogle, FaFacebookF } from "react-icons/fa";
-import axios from "axios";
+import ForgotPasswordModal from "../frogetpassword/forgetpasswordModel"
 import "./LoginScreen.css";
 
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showForgot, setShowForgot] = useState(false);
-  const [forgotEmail, setForgotEmail] = useState("");
-  const [forgotLoading, setForgotLoading] = useState(false);
-  const [forgotError, setForgotError] = useState("");
-  const [forgotSuccess, setForgotSuccess] = useState("");
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -38,59 +32,36 @@ const LoginScreen = () => {
     if (userInfo) navigate("/mynotes");
   }, [navigate, userInfo]);
 
-  // Login submit
+  // ✅ Normal login
   const submitHandler = (e) => {
     e.preventDefault();
     dispatch(login(email, password));
   };
 
-  // Google login success/fail
+  // ✅ Google login
   const handleGoogleSuccess = (tokenResponse) => {
     dispatch(googleLogin(tokenResponse.credential));
   };
   const handleGoogleError = () => console.error("Google Sign-In failed");
 
-  // Facebook login success/fail
+  // ✅ Facebook login
   const handleFacebookSuccess = (response) => {
     if (response.accessToken) dispatch(facebookLogin(response.accessToken));
   };
   const handleFacebookFailure = (error) =>
     console.error("Facebook Login Failed:", error);
 
-  // Forgot Password submit
-  const handleForgotSubmit = async (e) => {
-    e.preventDefault();
-    setForgotLoading(true);
-    setForgotError("");
-    setForgotSuccess("");
-
-    try {
-      const { data } = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/api/users/forgot-password`,
-        { email: forgotEmail }
-      );
-      setForgotSuccess(data.message || "Password reset email sent!");
-      setForgotLoading(false);
-    } catch (err) {
-      setForgotError(
-        err.response?.data?.message ||
-          "Failed to send password reset email. Try again."
-      );
-      setForgotLoading(false);
-    }
-  };
-
   return (
     <Container>
       <Row md={2}>
-        {/* Left illustration */}
+        {/* LEFT SIDE ILLUSTRATION */}
         <Col
           className="d-none d-sm-block"
           style={{ backgroundColor: "#F9FAFA", paddingTop: 40 }}
         >
           <div className="loginLeft text-center">
             <h2>Hi, Welcome back 👋</h2>
-            <p>More effectively with optimized workflows.</p>
+            <p>Work more effectively with optimized workflows.</p>
             <img
               height={"100%"}
               width={"90%"}
@@ -101,7 +72,7 @@ const LoginScreen = () => {
           </div>
         </Col>
 
-        {/* Right: Login form */}
+        {/* RIGHT SIDE LOGIN FORM */}
         <Col xs={12} md={6} className="mx-auto my-4">
           <div className="loginContainer">
             {error && <ErrorMessage variant="danger">{error}</ErrorMessage>}
@@ -111,7 +82,7 @@ const LoginScreen = () => {
               <Col>
                 <h3>Sign in to your account</h3>
                 <p className="mb-3">
-                  Don't have an account?{" "}
+                  Don’t have an account?{" "}
                   <Link
                     to="/register"
                     className="text-primary text-decoration-none"
@@ -122,7 +93,7 @@ const LoginScreen = () => {
               </Col>
             </Row>
 
-            {/* Email / Password Login */}
+            {/* EMAIL / PASSWORD LOGIN FORM */}
             <Form onSubmit={submitHandler}>
               <Form.Group controlId="formBasicEmail" className="mb-3">
                 <Form.Label>Email address</Form.Label>
@@ -167,12 +138,12 @@ const LoginScreen = () => {
               </Button>
             </Form>
 
-            {/* Divider + Social Buttons */}
+            {/* DIVIDER + SOCIAL LOGIN */}
             <div className="mt-4 text-center">
               <p className="text-muted mb-3">or continue with</p>
 
               <div className="d-flex justify-content-center gap-3 flex-wrap">
-                {/* Custom Google Button */}
+                {/* GOOGLE LOGIN */}
                 <div style={{ flex: "1 1 45%" }}>
                   <GoogleLogin
                     onSuccess={handleGoogleSuccess}
@@ -189,7 +160,7 @@ const LoginScreen = () => {
                   />
                 </div>
 
-                {/* Custom Facebook Button */}
+                {/* FACEBOOK LOGIN */}
                 <div style={{ flex: "1 1 45%" }}>
                   <FacebookLogin
                     appId={process.env.REACT_APP_FACEBOOK_APP_ID}
@@ -213,58 +184,11 @@ const LoginScreen = () => {
         </Col>
       </Row>
 
-      {/* Forgot Password Modal */}
-      <Modal
+      {/* ✅ Forgot Password Modal */}
+      <ForgotPasswordModal
         show={showForgot}
-        onHide={() => {
-          setShowForgot(false);
-          setForgotError("");
-          setForgotSuccess("");
-          setForgotEmail("");
-        }}
-        centered
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>Reset your password</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {forgotError && (
-            <div className="alert alert-danger py-2">{forgotError}</div>
-          )}
-          {forgotSuccess && (
-            <div className="alert alert-success py-2">{forgotSuccess}</div>
-          )}
-
-          <Form onSubmit={handleForgotSubmit}>
-            <Form.Group controlId="forgotEmail" className="mb-3">
-              <Form.Label>Enter your email address</Form.Label>
-              <Form.Control
-                type="email"
-                value={forgotEmail}
-                placeholder="Enter your email"
-                onChange={(e) => setForgotEmail(e.target.value)}
-                required
-              />
-            </Form.Group>
-
-            <Button
-              type="submit"
-              variant="primary"
-              className="w-100"
-              disabled={forgotLoading}
-            >
-              {forgotLoading ? (
-                <>
-                  <Spinner animation="border" size="sm" className="me-2" />
-                  Sending...
-                </>
-              ) : (
-                "Send Reset Link"
-              )}
-            </Button>
-          </Form>
-        </Modal.Body>
-      </Modal>
+        handleClose={() => setShowForgot(false)}
+      />
     </Container>
   );
 };
