@@ -19,7 +19,9 @@ const ForgotPasswordModal = ({ show, handleClose }) => {
         `${process.env.REACT_APP_BACKEND_URL}/api/users/forgot-password`,
         { email }
       );
-      setSuccessMsg(data.message || "Password reset email sent! Check your inbox.");
+      setSuccessMsg(
+        data.message || "Password reset email sent! Check your inbox."
+      );
       setEmail("");
       setLoading(false);
     } catch (err) {
