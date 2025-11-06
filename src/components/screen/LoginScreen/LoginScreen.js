@@ -18,30 +18,32 @@ const LoginScreen = () => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
   const { loading, error, userInfo } = useSelector((state) => state.userLogin);
 
   useEffect(() => {
-    if (userInfo) navigate("/mynotes");
+    if (userInfo) {
+      // Navigate immediately without reload
+      navigate("/mynotes", { replace: true });
+    }
   }, [navigate, userInfo]);
 
-  // Normal login
   const submitHandler = (e) => {
     e.preventDefault();
     dispatch(login(email, password));
   };
 
-  // Google login
   const handleGoogleSuccess = (tokenResponse) => {
-    dispatch(googleLogin(tokenResponse.credential));
+    if (tokenResponse?.credential) {
+      dispatch(googleLogin(tokenResponse.credential));
+    }
   };
   const handleGoogleError = () => console.error("Google Sign-In failed");
 
-  // Facebook login
   const handleFacebookSuccess = (response) => {
-    if (response.accessToken) dispatch(facebookLogin(response.accessToken));
+    if (response?.accessToken) dispatch(facebookLogin(response.accessToken));
   };
-  const handleFacebookFailure = (error) => console.error("Facebook Login Failed:", error);
+  const handleFacebookFailure = (error) =>
+    console.error("Facebook Login Failed:", error);
 
   return (
     <Container>
@@ -55,7 +57,7 @@ const LoginScreen = () => {
               height="100%"
               width="90%"
               src="/illustration-dashboard.webp"
-              alt="Dashboard illustration for login page"
+              alt="Dashboard illustration"
               className="loginImage"
             />
           </div>
@@ -79,7 +81,7 @@ const LoginScreen = () => {
               </Col>
             </Row>
 
-            {/* EMAIL / PASSWORD LOGIN FORM */}
+            {/* EMAIL LOGIN */}
             <Form onSubmit={submitHandler}>
               <Form.Group controlId="formBasicEmail" className="mb-3">
                 <Form.Label>Email address</Form.Label>
@@ -127,23 +129,12 @@ const LoginScreen = () => {
             {/* SOCIAL LOGIN */}
             <div className="mt-4 text-center">
               <p className="text-muted mb-3">or continue with</p>
-
               <div className="d-flex justify-content-center gap-3 flex-wrap">
                 {/* GOOGLE LOGIN */}
                 <div style={{ flex: "1 1 45%" }}>
                   <GoogleLogin
                     onSuccess={handleGoogleSuccess}
                     onError={handleGoogleError}
-                    render={({ onClick }) => (
-                      <button
-                        onClick={onClick}
-                        className="btn btn-light border d-flex align-items-center justify-content-center gap-2 w-100 py-2 rounded-pill shadow-sm"
-                        disabled={loading}
-                      >
-                        <FaGoogle color="#DB4437" size={18} />
-                        <span>Sign in with Google</span>
-                      </button>
-                    )}
                   />
                 </div>
 
