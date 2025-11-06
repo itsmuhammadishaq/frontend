@@ -7,12 +7,15 @@ import {
   Col,
   Spinner,
   InputGroup,
-  Stack,
 } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeSlash } from "react-bootstrap-icons";
 import { useDispatch, useSelector } from "react-redux";
-import { register, googleLogin, facebookLogin } from "../../../actions/userAction";
+import {
+  register,
+  googleLogin,
+  facebookLogin,
+} from "../../../actions/userAction";
 import { GoogleLogin } from "@react-oauth/google";
 import FacebookLogin from "@greatsumini/react-facebook-login";
 import { FaGoogle, FaFacebookF } from "react-icons/fa";
@@ -21,6 +24,7 @@ const RegisterScreen = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  // ✅ State for form data
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -34,14 +38,21 @@ const RegisterScreen = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const { loading, error, userInfo } = useSelector(
-    (state) => state.userRegister
-  );
+  // ✅ Redux state
+  const userRegister = useSelector((state) => state.userRegister);
+  const userLogin = useSelector((state) => state.userLogin);
 
+  const { loading, error, userInfo } = userRegister;
+  const { userInfo: loggedInUser } = userLogin;
+
+  // ✅ Redirect after login/register/google/facebook
   useEffect(() => {
-    if (userInfo) navigate("/mynotes");
-  }, [navigate, userInfo]);
+    if (userInfo || loggedInUser) {
+      navigate("/mynotes");
+    }
+  }, [navigate, userInfo, loggedInUser]);
 
+  // ✅ Field validation
   const validateField = (name, value) => {
     let message = "";
 
@@ -77,6 +88,7 @@ const RegisterScreen = () => {
     validateField(name, value);
   };
 
+  // ✅ Cloudinary Image Upload
   const postDetails = (file) => {
     if (!file)
       return setFieldErrors((prev) => ({
@@ -116,6 +128,7 @@ const RegisterScreen = () => {
       });
   };
 
+  // ✅ Submit form
   const submitHandler = (e) => {
     e.preventDefault();
     Object.keys(formData).forEach((key) => validateField(key, formData[key]));
@@ -234,7 +247,9 @@ const RegisterScreen = () => {
               />
               <Button
                 variant="outline-secondary"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                onClick={() =>
+                  setShowConfirmPassword(!showConfirmPassword)
+                }
                 tabIndex={-1}
               >
                 {showConfirmPassword ? <EyeSlash /> : <Eye />}
@@ -282,22 +297,13 @@ const RegisterScreen = () => {
         {/* OR Divider */}
         <div className="text-center my-3 text-muted">— or register with —</div>
 
-        {/* ✅ Social Login Buttons (same as LoginScreen) */}
+        {/* ✅ Social Login Buttons */}
         <div className="d-flex justify-content-center gap-3 flex-wrap">
           {/* Google Button */}
           <div style={{ flex: "1 1 45%" }}>
             <GoogleLogin
               onSuccess={handleGoogleSuccess}
               onError={handleGoogleError}
-              render={({ onClick }) => (
-                <button
-                  onClick={onClick}
-                  className="btn btn-light border d-flex align-items-center justify-content-center gap-2 w-100 py-2 rounded-pill shadow-sm"
-                >
-                  <FaGoogle color="#DB4437" size={18} />
-                  <span>Sign up with Google</span>
-                </button>
-              )}
             />
           </div>
 
@@ -310,7 +316,7 @@ const RegisterScreen = () => {
               render={({ onClick }) => (
                 <button
                   onClick={onClick}
-                  className="btn btn-primary d-flex align-items-center justify-content-center gap-2 w-100 py-2  shadow-sm"
+                  className="btn btn-primary d-flex align-items-center justify-content-center gap-2 w-100 py-2 shadow-sm"
                   style={{ backgroundColor: "#1877F2", border: "none" }}
                 >
                   <FaFacebookF size={18} />
