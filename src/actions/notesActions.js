@@ -109,6 +109,8 @@ export const deleteNoteAction = (id) => async (dispatch, getState) => {
   }
 };
 
+
+
 export const updateNoteAction = (id, title, content, category) => async (
   dispatch,
   getState
@@ -139,6 +141,10 @@ export const updateNoteAction = (id, title, content, category) => async (
       type: NOTES_UPDATE_SUCCESS,
       payload: data,
     });
+
+    // 👇 Refresh the notes list after update success
+    dispatch(listNotes());
+    
   } catch (error) {
     const message =
       error.response && error.response.data.message
