@@ -7,11 +7,13 @@ import { updateProfile } from "../../../actions/userAction";
 import Loading from "../../Loading";
 import ErrorMessage from "../../ErrorMessage";
 import { useNavigate } from "react-router-dom";
+import usePageTitle from "../../../hooks/usePageTitle";
 
 const DEFAULT_AVATAR =
   "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg";
 
 const ProfileScreen = () => {
+    usePageTitle("profile");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [pic, setPic] = useState(DEFAULT_AVATAR);

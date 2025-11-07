@@ -10,6 +10,7 @@ import Loading from "../../Loading";
 import ErrorMessage from "../../ErrorMessage";
 
 function SingleNote() {
+    
   const { id } = useParams(); // ✅ Extract note ID from URL
   const navigate = useNavigate();
   const dispatch = useDispatch();

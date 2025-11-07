@@ -10,8 +10,10 @@ import FacebookLogin from "@greatsumini/react-facebook-login";
 import { FaGoogle, FaFacebookF } from "react-icons/fa";
 import ForgotPasswordModal from "../frogetpassword/forgetpasswordModel";
 import "./LoginScreen.css";
+import usePageTitle from "../../../hooks/usePageTitle";
 
 const LoginScreen = () => {
+    usePageTitle("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showForgot, setShowForgot] = useState(false);

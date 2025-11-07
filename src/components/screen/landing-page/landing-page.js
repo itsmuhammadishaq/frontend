@@ -5,8 +5,10 @@ import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import { PencilSquare, Folder, CloudCheck, ShieldCheck } from "react-bootstrap-icons";
 import "./landing-page.css";
+import usePageTitle from "../../../hooks/usePageTitle";
 
 const LandingPage = () => {
+    usePageTitle("Home");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {

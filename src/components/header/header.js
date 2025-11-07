@@ -46,10 +46,17 @@ function Header() {
         <Navbar.Brand
           as={Link}
           to="/"
-          className="fw-bold fs-4 text-white"
+          className="fw-bold fs-4 text-white d-flex align-items-center"
           style={{ letterSpacing: "0.2px" }}
         >
-          📝 NoteZipper
+          <Image
+            width={20}
+            height={25}
+            src="/favicon.ico"
+            alt="NoteZipper logo"
+            className="me-2" // 👈 adds space to the right
+          />
+          NoteZipper
         </Navbar.Brand>
 
         <Navbar.Toggle aria-controls="navbarScroll" />

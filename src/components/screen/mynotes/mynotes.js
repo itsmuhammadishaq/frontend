@@ -20,8 +20,10 @@ import NoteModal from "../models/models";
 import DeleteNoteModal from "../modal/modal";
 import { useNavigate } from "react-router-dom";
 import { Search, Edit2, Trash2 } from "lucide-react";
+import usePageTitle from "../../../hooks/usePageTitle";
 
 const MyNotes = () => {
+    usePageTitle("mynotes");
   const [checkedNotes, setCheckedNotes] = useState([]);
   const [search, setSearch] = useState("");
   const [localNotes, setLocalNotes] = useState([]);
