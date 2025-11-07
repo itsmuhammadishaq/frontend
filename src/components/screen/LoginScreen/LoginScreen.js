@@ -49,7 +49,10 @@ const LoginScreen = () => {
     <Container>
       <Row>
         {/* LEFT SIDE ILLUSTRATION */}
-        <Col className="d-none d-sm-block" style={{ backgroundColor: "#F9FAFA", paddingTop: 40 }}>
+        <Col
+          className="d-none d-sm-block"
+          style={{ backgroundColor: "#F9FAFA", paddingTop: 40 }}
+        >
           <div className="loginLeft text-center">
             <h2>Hi, Welcome back 👋</h2>
             <p>Work more effectively with optimized workflows.</p>
@@ -74,7 +77,10 @@ const LoginScreen = () => {
                 <h3>Sign in to your account</h3>
                 <p className="mb-3">
                   Don’t have an account?{" "}
-                  <Link to="/register" className="text-primary text-decoration-none">
+                  <Link
+                    to="/register"
+                    className="text-primary text-decoration-none"
+                  >
                     Get started
                   </Link>
                 </p>
@@ -118,11 +124,22 @@ const LoginScreen = () => {
 
               <Button
                 type="submit"
-                className="w-100 mt-3 py-2 fw-semibold"
+                className="w-100 mt-3 py-2 fw-semibold d-flex justify-content-center align-items-center"
                 variant="primary"
                 disabled={loading}
               >
-                {loading ? "Signing In..." : "Sign In"}
+                {loading ? (
+                  <>
+                    <span
+                      className="spinner-border spinner-border-sm me-2"
+                      role="status"
+                      aria-hidden="true"
+                    ></span>
+                    Signing In...
+                  </>
+                ) : (
+                  "Sign In"
+                )}
               </Button>
             </Form>
 
@@ -164,7 +181,10 @@ const LoginScreen = () => {
       </Row>
 
       {/* FORGOT PASSWORD MODAL */}
-      <ForgotPasswordModal show={showForgot} handleClose={() => setShowForgot(false)} />
+      <ForgotPasswordModal
+        show={showForgot}
+        handleClose={() => setShowForgot(false)}
+      />
     </Container>
   );
 };
