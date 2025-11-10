@@ -23,7 +23,10 @@ import { Search, Edit2, Trash2 } from "lucide-react";
 import usePageTitle from "../../../hooks/usePageTitle";
 
 // 🧩 DnD imports
-import { DndContext, closestCenter } from "@dnd-kit/core";
+import {
+  DndContext,
+  closestCenter,
+} from "@dnd-kit/core";
 import {
   SortableContext,
   verticalListSortingStrategy,
@@ -123,7 +126,7 @@ const MyNotes = () => {
   }, [notes]);
 
   // ✅ Handle drag reorder
-  const handleDragEnd = async (event) => {
+  const handleDragEnd = (event) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
@@ -133,22 +136,12 @@ const MyNotes = () => {
     const newOrder = arrayMove(localNotes, oldIndex, newIndex);
     setLocalNotes(newOrder);
 
-    // ✅ Save to backend
-    try {
-      await axios.put(
-        `${process.env.REACT_APP_BACKEND_URL}/api/notes/reorder`,
-        { order: newOrder.map((n) => n._id) },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${userInfo.token}`,
-          },
-        }
-      );
-      console.log("✅ Notes order saved successfully");
-    } catch (err) {
-      console.error("❌ Error saving order:", err);
-    }
+    // Optional: persist new order to backend
+    // axios.post(
+    //   `${process.env.REACT_APP_BACKEND_URL}/api/notes/reorder`,
+    //   { order: newOrder.map((n) => n._id) },
+    //   { headers: { Authorization: `Bearer ${userInfo.token}` } }
+    // );
   };
 
   // ✅ Sort completed notes to bottom
@@ -220,10 +213,7 @@ const MyNotes = () => {
         )}
 
         {/* 🧲 Drag & Drop Notes List */}
-        <DndContext
-          collisionDetection={closestCenter}
-          onDragEnd={handleDragEnd}
-        >
+        <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext
             items={filteredNotes.map((n) => n._id)}
             strategy={verticalListSortingStrategy}
