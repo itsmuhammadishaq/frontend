@@ -28,7 +28,7 @@ import {
   SortableContext,
   verticalListSortingStrategy,
   arrayMove,
-  useSortable,
+  useSortable, // ✅ FIXED missing import
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
@@ -122,7 +122,7 @@ const MyNotes = () => {
     }
   }, [notes]);
 
-  // ✅ Handle drag reorder + backend persist
+  // ✅ Handle drag reorder
   const handleDragEnd = async (event) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
@@ -220,7 +220,10 @@ const MyNotes = () => {
         )}
 
         {/* 🧲 Drag & Drop Notes List */}
-        <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <DndContext
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
           <SortableContext
             items={filteredNotes.map((n) => n._id)}
             strategy={verticalListSortingStrategy}
