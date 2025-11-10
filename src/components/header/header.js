@@ -25,12 +25,12 @@ function Header() {
     navigate("/");
   };
 
-  // const handleSearch = (e) => {
-  //   e.preventDefault();
-  //   if (search.trim()) {
-  //     navigate(`/mynotes?search=${search}`);
-  //   }
-  // };
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (search.trim()) {
+      navigate(`/mynotes?search=${search}`);
+    }
+  };
 
   return (
     <Navbar
