@@ -5,21 +5,14 @@ import { deleteNoteAction } from "../../../actions/notesActions";
 
 const DeleteNoteModal = ({ show, handleClose, note }) => {
   const dispatch = useDispatch();
+  const { loading, success } = useSelector((state) => state.noteDelete);
 
-  const noteDelete = useSelector((state) => state.noteDelete);
-  const { loading: loadingDelete, success: successDelete } = noteDelete;
-
-  // ✅ Auto-close modal on successful delete
   useEffect(() => {
-    if (successDelete) {
-      handleClose();
-    }
-  }, [successDelete, handleClose]);
+    if (success) handleClose();
+  }, [success, handleClose]);
 
-  const handleDeleteConfirmed = () => {
-    if (note) {
-      dispatch(deleteNoteAction(note._id));
-    }
+  const handleDelete = () => {
+    if (note?._id) dispatch(deleteNoteAction(note._id));
   };
 
   return (
@@ -27,22 +20,15 @@ const DeleteNoteModal = ({ show, handleClose, note }) => {
       <Modal.Header closeButton>
         <Modal.Title>Delete Note</Modal.Title>
       </Modal.Header>
-
       <Modal.Body>
-        Are you sure you want to delete{" "}
-        <strong>{note?.title || "this note"}</strong>?
+        Are you sure you want to delete <strong>{note?.title}</strong>?
       </Modal.Body>
-
       <Modal.Footer>
-        <Button variant="success" onClick={handleClose}>
+        <Button variant="secondary" onClick={handleClose}>
           Cancel
         </Button>
-        <Button
-          variant="danger"
-          onClick={handleDeleteConfirmed}
-          disabled={loadingDelete}
-        >
-          {loadingDelete ? "Deleting..." : "Delete"}
+        <Button variant="danger" onClick={handleDelete} disabled={loading}>
+          {loading ? "Deleting..." : "Delete"}
         </Button>
       </Modal.Footer>
     </Modal>

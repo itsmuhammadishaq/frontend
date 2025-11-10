@@ -34,3 +34,23 @@ button.btn-sm {
 .note-card {
   transition: border-color 0.3s ease;
 }
+.draggable-note-wrapper {
+  position: relative;
+}
+
+.drag-handle {
+  position: absolute;
+  left: -30px; /* adjust spacing */
+  top: 50%;
+  transform: translateY(-50%);
+  color: #ccc; /* light color */
+  opacity: 0;
+  transition: opacity 0.2s;
+  cursor: grab;
+}
+
+.draggable-note-wrapper:hover .drag-handle {
+  opacity: 1;
+}
+
+

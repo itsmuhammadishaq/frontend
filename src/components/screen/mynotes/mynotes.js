@@ -19,8 +19,9 @@ import axios from "axios";
 import NoteModal from "../models/models";
 import DeleteNoteModal from "../modal/modal";
 import { useNavigate } from "react-router-dom";
-import { Search, Edit2, Trash2 } from "lucide-react";
+import { Search, Edit2, Trash2, Move } from "lucide-react";
 import usePageTitle from "../../../hooks/usePageTitle";
+import "./mynotes.css";
 
 // 🧩 DnD imports
 import { DndContext, closestCenter } from "@dnd-kit/core";
@@ -32,7 +33,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-// 🧱 Draggable wrapper
+// 🧱 Draggable wrapper with drag handle
 const DraggableNote = ({ id, children }) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id });
@@ -40,11 +41,19 @@ const DraggableNote = ({ id, children }) => {
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    cursor: "grab",
+    position: "relative",
   };
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+    <div ref={setNodeRef} style={style} className="draggable-note-wrapper">
+      {/* Drag handle */}
+      <div
+        {...attributes}
+        {...listeners}
+        className="drag-handle d-flex align-items-center justify-content-center"
+      >
+        <Move size={18} />
+      </div>
       {children}
     </div>
   );
@@ -100,6 +109,11 @@ const MyNotes = () => {
     setShowDeleteModal(true);
   };
 
+  const closeDeleteModal = () => {
+    setShowDeleteModal(false);
+    setNoteToDelete(null); // reset noteToDelete
+  };
+
   // ✅ Fetch notes
   useEffect(() => {
     if (!userInfo) {
@@ -129,7 +143,6 @@ const MyNotes = () => {
     const newOrder = arrayMove(localNotes, oldIndex, newIndex);
     setLocalNotes(newOrder);
 
-    // ✅ Save to backend
     try {
       await axios.put(
         `${process.env.REACT_APP_BACKEND_URL}/api/notes/reorder`,
@@ -169,8 +182,9 @@ const MyNotes = () => {
           noteData={selectedNote}
         />
         <DeleteNoteModal
+          key={noteToDelete?._id || "none"}
           show={showDeleteModal}
-          handleClose={() => setShowDeleteModal(false)}
+          handleClose={closeDeleteModal}
           note={noteToDelete}
         />
 
@@ -216,10 +230,7 @@ const MyNotes = () => {
         )}
 
         {/* 🧲 Drag & Drop Notes List */}
-        <DndContext
-          collisionDetection={closestCenter}
-          onDragEnd={handleDragEnd}
-        >
+        <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
           <SortableContext
             items={filteredNotes.map((n) => n._id)}
             strategy={verticalListSortingStrategy}
