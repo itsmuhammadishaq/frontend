@@ -22,8 +22,36 @@ import { useNavigate } from "react-router-dom";
 import { Search, Edit2, Trash2 } from "lucide-react";
 import usePageTitle from "../../../hooks/usePageTitle";
 
+// 🧩 DnD imports
+import { DndContext, closestCenter } from "@dnd-kit/core";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  arrayMove,
+  useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+
+// 🧱 Draggable wrapper
+const DraggableNote = ({ id, children }) => {
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    cursor: "grab",
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+      {children}
+    </div>
+  );
+};
+
 const MyNotes = () => {
-    usePageTitle("mynotes");
+  usePageTitle("mynotes");
   const [checkedNotes, setCheckedNotes] = useState([]);
   const [search, setSearch] = useState("");
   const [localNotes, setLocalNotes] = useState([]);
@@ -94,6 +122,35 @@ const MyNotes = () => {
     }
   }, [notes]);
 
+  // ✅ Handle drag reorder + backend persist
+  const handleDragEnd = async (event) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = localNotes.findIndex((n) => n._id === active.id);
+    const newIndex = localNotes.findIndex((n) => n._id === over.id);
+
+    const newOrder = arrayMove(localNotes, oldIndex, newIndex);
+    setLocalNotes(newOrder);
+
+    // ✅ Save to backend
+    try {
+      await axios.put(
+        `${process.env.REACT_APP_BACKEND_URL}/api/notes/reorder`,
+        { order: newOrder.map((n) => n._id) },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${userInfo.token}`,
+          },
+        }
+      );
+      console.log("✅ Notes order saved successfully");
+    } catch (err) {
+      console.error("❌ Error saving order:", err);
+    }
+  };
+
   // ✅ Sort completed notes to bottom
   const sortedNotes = [...localNotes].sort((a, b) =>
     a.completed === b.completed ? 0 : a.completed ? 1 : -1
@@ -162,101 +219,110 @@ const MyNotes = () => {
           <p className="text-center text-muted mt-5 fs-5">No notes found.</p>
         )}
 
-        {/* Notes List */}
-        <div className="d-flex flex-column gap-3">
-          {filteredNotes
-            .slice()
-            .reverse()
-            .map((note) => (
-              <Accordion key={note._id}>
-                <Card
-                  className={`shadow-sm rounded-3 overflow-hidden note-card ${
-                    note.completed
-                      ? "border-success border-3"
-                      : "border-light border-1"
-                  }`}
-                >
-                  <Accordion.Header>
-                    <div className="d-flex align-items-center w-100 justify-content-between">
-                      {/* Checkbox + Title */}
-                      <div className="d-flex align-items-center flex-grow-1">
-                        <Form.Check
-                          className="me-3"
-                          checked={note.completed || false}
-                          onChange={(e) => handleCheck(note._id, e)}
-                          onClick={(e) => e.stopPropagation()}
-                        />
-                        <span
-                          className={`${
-                            note.completed
-                              ? "text-decoration-line-through text-muted"
-                              : ""
-                          }`}
-                          style={{ fontSize: "1rem", fontWeight: 500 }}
-                        >
-                          {note.title}
-                        </span>
-                      </div>
-
-                      {/* Edit / Delete Buttons */}
-                      <div className="d-flex gap-2 me-2">
-                        {!note.completed && (
-                          <Button
-                            size="sm"
-                            variant="outline-success"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setSelectedNote(note);
-                              setModalMode("edit");
-                              setOpen(true);
-                            }}
-                            className="d-flex align-items-center gap-1"
-                          >
-                            <Edit2 size={16} /> Edit
-                          </Button>
-                        )}
-                        <Button
-                          size="sm"
-                          variant="outline-danger"
-                          disabled={loadingDelete}
-                          onClick={(e) => confirmDeleteHandler(note, e)}
-                          className="d-flex align-items-center gap-1"
-                        >
-                          <Trash2 size={16} /> Delete
-                        </Button>
-                      </div>
-                    </div>
-                  </Accordion.Header>
-
-                  <Accordion.Body className="bg-white py-3 px-4">
-                    <div className="d-flex justify-content-between align-items-center mb-2 flex-wrap">
-                      <Badge
-                        bg="success"
-                        text="light"
-                        className="px-3 py-2 fw-normal"
+        {/* 🧲 Drag & Drop Notes List */}
+        <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+          <SortableContext
+            items={filteredNotes.map((n) => n._id)}
+            strategy={verticalListSortingStrategy}
+          >
+            <div className="d-flex flex-column gap-3">
+              {filteredNotes
+                .slice()
+                .reverse()
+                .map((note) => (
+                  <DraggableNote key={note._id} id={note._id}>
+                    <Accordion>
+                      <Card
+                        className={`shadow-sm rounded-3 overflow-hidden note-card ${
+                          note.completed
+                            ? "border-success border-3"
+                            : "border-light border-1"
+                        }`}
                       >
-                        {note.category || "Uncategorized"}
-                      </Badge>
-                      <small className="text-muted">
-                        Created on{" "}
-                        <strong>
-                          {note.createdAt
-                            ? note.createdAt.substring(0, 10)
-                            : "N/A"}
-                        </strong>
-                      </small>
-                    </div>
-                    <p
-                      className="text-secondary mb-0"
-                      style={{ whiteSpace: "pre-line" }}
-                    >
-                      {note.content}
-                    </p>
-                  </Accordion.Body>
-                </Card>
-              </Accordion>
-            ))}
-        </div>
+                        <Accordion.Header>
+                          <div className="d-flex align-items-center w-100 justify-content-between">
+                            {/* Checkbox + Title */}
+                            <div className="d-flex align-items-center flex-grow-1">
+                              <Form.Check
+                                className="me-3"
+                                checked={note.completed || false}
+                                onChange={(e) => handleCheck(note._id, e)}
+                                onClick={(e) => e.stopPropagation()}
+                              />
+                              <span
+                                className={`${
+                                  note.completed
+                                    ? "text-decoration-line-through text-muted"
+                                    : ""
+                                }`}
+                                style={{ fontSize: "1rem", fontWeight: 500 }}
+                              >
+                                {note.title}
+                              </span>
+                            </div>
+
+                            {/* Edit / Delete Buttons */}
+                            <div className="d-flex gap-2 me-2">
+                              {!note.completed && (
+                                <Button
+                                  size="sm"
+                                  variant="outline-success"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setSelectedNote(note);
+                                    setModalMode("edit");
+                                    setOpen(true);
+                                  }}
+                                  className="d-flex align-items-center gap-1"
+                                >
+                                  <Edit2 size={16} /> Edit
+                                </Button>
+                              )}
+                              <Button
+                                size="sm"
+                                variant="outline-danger"
+                                disabled={loadingDelete}
+                                onClick={(e) => confirmDeleteHandler(note, e)}
+                                className="d-flex align-items-center gap-1"
+                              >
+                                <Trash2 size={16} /> Delete
+                              </Button>
+                            </div>
+                          </div>
+                        </Accordion.Header>
+
+                        <Accordion.Body className="bg-white py-3 px-4">
+                          <div className="d-flex justify-content-between align-items-center mb-2 flex-wrap">
+                            <Badge
+                              bg="success"
+                              text="light"
+                              className="px-3 py-2 fw-normal"
+                            >
+                              {note.category || "Uncategorized"}
+                            </Badge>
+                            <small className="text-muted">
+                              Created on{" "}
+                              <strong>
+                                {note.createdAt
+                                  ? note.createdAt.substring(0, 10)
+                                  : "N/A"}
+                              </strong>
+                            </small>
+                          </div>
+                          <p
+                            className="text-secondary mb-0"
+                            style={{ whiteSpace: "pre-line" }}
+                          >
+                            {note.content}
+                          </p>
+                        </Accordion.Body>
+                      </Card>
+                    </Accordion>
+                  </DraggableNote>
+                ))}
+            </div>
+          </SortableContext>
+        </DndContext>
       </MainScreen>
     </Container>
   );
