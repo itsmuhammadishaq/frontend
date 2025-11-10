@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import MainScreen from "../../mainscreen";
 import {
   Button,
@@ -52,7 +52,6 @@ const DraggableNote = ({ id, children }) => {
 
 const MyNotes = () => {
   usePageTitle("mynotes");
-  const [checkedNotes, setCheckedNotes] = useState([]);
   const [search, setSearch] = useState("");
   const [localNotes, setLocalNotes] = useState([]);
   const [open, setOpen] = useState(false);
@@ -80,7 +79,6 @@ const MyNotes = () => {
       note._id === id ? { ...note, completed: !note.completed } : note
     );
     setLocalNotes(updatedNotes);
-    setCheckedNotes(updatedNotes.filter((n) => n.completed).map((n) => n._id));
 
     try {
       await axios.put(
@@ -115,10 +113,8 @@ const MyNotes = () => {
   useEffect(() => {
     if (Array.isArray(notes)) {
       setLocalNotes(notes);
-      setCheckedNotes(notes.filter((n) => n.completed).map((n) => n._id));
     } else {
       setLocalNotes([]);
-      setCheckedNotes([]);
     }
   }, [notes]);
 
@@ -220,7 +216,10 @@ const MyNotes = () => {
         )}
 
         {/* 🧲 Drag & Drop Notes List */}
-        <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <DndContext
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
           <SortableContext
             items={filteredNotes.map((n) => n._id)}
             strategy={verticalListSortingStrategy}

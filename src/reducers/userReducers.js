@@ -1,4 +1,3 @@
-import Loading from "../components/Loading";
 import {
   USER_LOGIN_FAIL,
   USER_LOGIN_REQUEST,
@@ -24,11 +23,11 @@ export const userLoginReducer = (state = {}, action) => {
       return {};
 
     default:
-        return state;
+      return state;
   }
 };
 
-export const userRegisterReducer= (state = {}, action) => {
+export const userRegisterReducer = (state = {}, action) => {
   switch (action.type) {
     case USER_REGISTER_REQUEST:
       return { Loading: true };
@@ -36,13 +35,11 @@ export const userRegisterReducer= (state = {}, action) => {
       return { Loading: false, userInfo: action.payload };
     case USER_REGISTER_FAIL:
       return { Loading: false, error: action.payload };
-    
 
     default:
-        return state;
+      return state;
   }
 };
-
 
 export const userUpdateReducer = (state = {}, action) => {
   switch (action.type) {
@@ -55,4 +52,4 @@ export const userUpdateReducer = (state = {}, action) => {
     default:
       return state;
   }
-}
+};

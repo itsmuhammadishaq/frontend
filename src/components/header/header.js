@@ -6,7 +6,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../actions/userAction";
 import Image from "react-bootstrap/Image";
-import { useState } from "react";
 
 const DEFAULT_AVATAR =
   "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg";
@@ -18,18 +17,9 @@ function Header() {
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
 
-  const [search,] = useState("");
-
   const logoutHandle = () => {
     dispatch(logout());
     navigate("/");
-  };
-
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (search.trim()) {
-      navigate(`/mynotes?search=${search}`);
-    }
   };
 
   return (
@@ -111,7 +101,6 @@ function Header() {
                   />
 
                   <NavDropdown
-                    
                     id="navbarScrollingDropdown"
                     align="end"
                     menuVariant="light"
