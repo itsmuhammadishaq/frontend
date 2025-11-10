@@ -18,19 +18,19 @@ function Header() {
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
 
-  const [search, setSearch] = useState("");
+  const [search,] = useState("");
 
   const logoutHandle = () => {
     dispatch(logout());
     navigate("/");
   };
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (search.trim()) {
-      navigate(`/mynotes?search=${search}`);
-    }
-  };
+  // const handleSearch = (e) => {
+  //   e.preventDefault();
+  //   if (search.trim()) {
+  //     navigate(`/mynotes?search=${search}`);
+  //   }
+  // };
 
   return (
     <Navbar
@@ -111,11 +111,7 @@ function Header() {
                   />
 
                   <NavDropdown
-                    // title={
-                    //   <span className="fw-semibold text-white d-flex align-items-center jsutify-content-center">
-                    //     {userInfo?.name}
-                    //   </span>
-                    // }
+                    
                     id="navbarScrollingDropdown"
                     align="end"
                     menuVariant="light"

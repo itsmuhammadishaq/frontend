@@ -5,7 +5,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import MyNotes from "./components/screen/mynotes/mynotes";
 import LoginScreen from "./components/screen/LoginScreen/LoginScreen";
 import RegisterScreen from "./components/screen/RegisterScreen/RegisterScreen";
-import CreateNote from "./components/screen/CreateNote/CreateNote";
+
 import SingleNote from "./components/screen/SingleNote/SingleNote";
 import { useState } from "react";
 import profileScreen from "./components/screen/profilScreen/profileScreen";
@@ -13,7 +13,7 @@ import StaticExample from "./components/screen/models/models";
 
 
 function App() {
-  const [search,setSearch]=useState("")
+  const [search]=useState("")
   console.log(search)
   return (
     <BrowserRouter>

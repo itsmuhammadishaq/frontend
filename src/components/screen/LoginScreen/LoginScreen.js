@@ -7,7 +7,7 @@ import ErrorMessage from "../../ErrorMessage";
 import { login, googleLogin, facebookLogin } from "../../../actions/userAction";
 import { GoogleLogin } from "@react-oauth/google";
 import FacebookLogin from "@greatsumini/react-facebook-login";
-import { FaGoogle, FaFacebookF } from "react-icons/fa";
+import {  FaFacebookF } from "react-icons/fa";
 import ForgotPasswordModal from "../frogetpassword/forgetpasswordModel";
 import "./LoginScreen.css";
 import usePageTitle from "../../../hooks/usePageTitle";

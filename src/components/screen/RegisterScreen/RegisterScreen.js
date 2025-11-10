@@ -18,7 +18,7 @@ import {
 } from "../../../actions/userAction";
 import { GoogleLogin } from "@react-oauth/google";
 import FacebookLogin from "@greatsumini/react-facebook-login";
-import { FaGoogle, FaFacebookF } from "react-icons/fa";
+import { FaFacebookF } from "react-icons/fa";
 import usePageTitle from "../../../hooks/usePageTitle";
 
 const RegisterScreen = () => {
