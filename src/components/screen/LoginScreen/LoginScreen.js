@@ -148,7 +148,7 @@ const LoginScreen = () => {
             {/* SOCIAL LOGIN */}
             <div className="mt-4 text-center">
               <p className="text-muted mb-3">or continue with</p>
-              <div className="d-flex justify-content-center gap-3 flex-wrap">
+              <div className="d-flex justify-content-center gap-1 flex-wrap">
                 {/* GOOGLE LOGIN */}
                 <div style={{ flex: "1 1 50%" }}>
                   <GoogleLogin
