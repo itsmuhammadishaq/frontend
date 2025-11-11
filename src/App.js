@@ -10,23 +10,30 @@ import SingleNote from "./components/screen/SingleNote/SingleNote";
 import { useState } from "react";
 import profileScreen from "./components/screen/profilScreen/profileScreen";
 import StaticExample from "./components/screen/models/models";
-
+import ResetPasswordScreen from "./components/screen/ResetPasswordScreen";
 
 function App() {
-  const [search]=useState("")
-  console.log(search)
+  const [search] = useState("");
+  console.log(search);
   return (
     <BrowserRouter>
-      <Header  />
+      <Header />
       <main>
         <Routes>
           <Route path="/" Component={LandingPage} />
           <Route path="/login" Component={LoginScreen} />
           <Route path="/profile" Component={profileScreen} />
           <Route path="/register" Component={RegisterScreen} />
-          <Route path="/createnote" element={<StaticExample/>} />
+          <Route path="/createnote" element={<StaticExample />} />
           <Route path="/note/:id" element={<SingleNote />} />
-          <Route path="/mynotes" Component={()=><MyNotes search={search}  />} />
+          <Route
+            path="/reset-password/:token"
+            element={<ResetPasswordScreen />}
+          />
+          <Route
+            path="/mynotes"
+            Component={() => <MyNotes search={search} />}
+          />
         </Routes>
       </main>
       <Footer />
