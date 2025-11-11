@@ -150,7 +150,7 @@ const LoginScreen = () => {
               <p className="text-muted mb-3">or continue with</p>
               <div className="d-flex justify-content-center gap-3 flex-wrap">
                 {/* GOOGLE LOGIN */}
-                <div style={{ flex: "1 1 45%" }}>
+                <div style={{ flex: "1 1 50%" }}>
                   <GoogleLogin
                     onSuccess={handleGoogleSuccess}
                     onError={handleGoogleError}
@@ -158,7 +158,7 @@ const LoginScreen = () => {
                 </div>
 
                 {/* FACEBOOK LOGIN */}
-                <div style={{ flex: "1 1 30%" }}>
+                <div style={{ flex: "1 1 25%" }}>
                   <FacebookLogin
                     appId={process.env.REACT_APP_FACEBOOK_APP_ID}
                     onSuccess={handleFacebookSuccess}
