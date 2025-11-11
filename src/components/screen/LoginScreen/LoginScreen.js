@@ -2,18 +2,18 @@ import React, { useEffect, useState } from "react";
 import { Form, Button, Row, Col, Container } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import Loading from "../../Loading";
 import ErrorMessage from "../../ErrorMessage";
 import { login, googleLogin, facebookLogin } from "../../../actions/userAction";
 import { GoogleLogin } from "@react-oauth/google";
 import FacebookLogin from "@greatsumini/react-facebook-login";
-import {  FaFacebookF } from "react-icons/fa";
-import ForgotPasswordModal from "../frogetpassword/forgetpasswordModel";
+import { FaFacebookF } from "react-icons/fa";
+import ForgotPasswordModal from "../frogetpassword/forgetpasswordModel"; // ✅ fixed import
 import "./LoginScreen.css";
 import usePageTitle from "../../../hooks/usePageTitle";
 
 const LoginScreen = () => {
-    usePageTitle("login");
+  usePageTitle("Login");
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showForgot, setShowForgot] = useState(false);
@@ -24,7 +24,6 @@ const LoginScreen = () => {
 
   useEffect(() => {
     if (userInfo) {
-      // Navigate immediately without reload
       navigate("/mynotes", { replace: true });
     }
   }, [navigate, userInfo]);
@@ -39,11 +38,13 @@ const LoginScreen = () => {
       dispatch(googleLogin(tokenResponse.credential));
     }
   };
+
   const handleGoogleError = () => console.error("Google Sign-In failed");
 
   const handleFacebookSuccess = (response) => {
     if (response?.accessToken) dispatch(facebookLogin(response.accessToken));
   };
+
   const handleFacebookFailure = (error) =>
     console.error("Facebook Login Failed:", error);
 
@@ -72,7 +73,6 @@ const LoginScreen = () => {
         <Col xs={12} md={6} className="mx-auto my-4">
           <div className="loginContainer">
             {error && <ErrorMessage variant="danger">{error}</ErrorMessage>}
-            {loading && <Loading />}
 
             <Row className="py-3">
               <Col>
@@ -124,6 +124,7 @@ const LoginScreen = () => {
                 </Button>
               </div>
 
+              {/* ✅ SIGN IN BUTTON WITH BUILT-IN LOADING */}
               <Button
                 type="submit"
                 className="w-100 mt-3 py-2 fw-semibold d-flex justify-content-center align-items-center"
@@ -148,7 +149,7 @@ const LoginScreen = () => {
             {/* SOCIAL LOGIN */}
             <div className="mt-4 text-center">
               <p className="text-muted mb-3">or continue with</p>
-              <div className="d-flex justify-content-center gap-1 flex-wrap">
+              <div className="d-flex justify-content-center gap-2 flex-wrap">
                 {/* GOOGLE LOGIN */}
                 <div style={{ flex: "1 1 50%" }}>
                   <GoogleLogin
@@ -158,7 +159,7 @@ const LoginScreen = () => {
                 </div>
 
                 {/* FACEBOOK LOGIN */}
-                <div style={{ flex: "1 1 25%" }}>
+                <div style={{ flex: "1 1 40%" }}>
                   <FacebookLogin
                     appId={process.env.REACT_APP_FACEBOOK_APP_ID}
                     onSuccess={handleFacebookSuccess}
@@ -171,7 +172,7 @@ const LoginScreen = () => {
                         disabled={loading}
                       >
                         <FaFacebookF size={18} />
-                        <span>Sign in with Facebook</span>
+                        <span>Facebook</span>
                       </button>
                     )}
                   />
