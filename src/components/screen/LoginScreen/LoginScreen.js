@@ -158,7 +158,7 @@ const LoginScreen = () => {
                 </div>
 
                 {/* FACEBOOK LOGIN */}
-                <div style={{ flex: "1 1 45%" }}>
+                <div style={{ flex: "1 1 30%" }}>
                   <FacebookLogin
                     appId={process.env.REACT_APP_FACEBOOK_APP_ID}
                     onSuccess={handleFacebookSuccess}
